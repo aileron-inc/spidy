@@ -13,6 +13,10 @@ Naming/UncommunicativeMethodParamName:
   AllowedNames:
     - as
 
+Metrics/AbcSize:
+  Max: 21
+  Exclude:
+
 Metrics/LineLength:
   Max: 120
 

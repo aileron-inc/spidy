@@ -11,31 +11,25 @@ class Spidy::Shell
     @definition_file = definition_file
   end
 
-  # rubocop:disable Lint/AssignmentInCondition, Style/RescueStandardError
   def scraper(name)
-    command = scrapers[name.to_sym]
+    command = scrapers[name&.to_sym] || scrapers.values.first
     fail "undefined commmand[#{name}]" if command.nil?
+    return command.call(&definition_file.output) unless FileTest.pipe?(STDIN)
 
-    while line = STDIN.gets
-      url = line.strip
-      begin
-        command.call(url, &definition_file.output)
-      rescue => e
-        STDERR.puts "ERROR #{url}: #{e}\n#{e.backtrace}"
-      end
+    STDIN.each do |line|
+      command.call(line.strip, &definition_file.output)
+    rescue StandardError
+      STDERR.puts "ERROR #{url}: #{$ERROR_INFO}\n#{$ERROR_INFO.backtrace}"
     end
   end
-  # rubocop:enable Lint/AssignmentInCondition, Style/RescueStandardError
 
   def spider(name)
-    command = spiders[name.to_sym]
-    if File.pipe?(STDIN)
-      STDIN.each_line do |line|
-        start_url = line.strip
-        command.call(start_url) { |url| puts url }
-      end
-    else
-      command.call { |url| puts url }
+    command = spiders[name&.to_sym] || spiders.values.first
+    fail "undefined commmand[#{name}]" if command.nil?
+    return command.call { |url| puts url } unless File.pipe?(STDIN)
+
+    STDIN.each_line do |line|
+      command.call(line.strip) { |url| puts url }
     end
   end
 
