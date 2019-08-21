@@ -1,0 +1,23 @@
+inherit_from: .rubocop_todo.yml
+AllCops:
+  DisplayCopNames: true
+  TargetRubyVersion: 2.6
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/SignalException:
+  EnforcedStyle: semantic
+
+Naming/UncommunicativeMethodParamName:
+  AllowedNames:
+    - as
+
+Metrics/LineLength:
+  Max: 120
+
+Metrics/BlockLength:
+  Max: 120
+
+SignalException:
+  EnforcedStyle: semantic
