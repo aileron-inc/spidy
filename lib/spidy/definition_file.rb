@@ -6,7 +6,7 @@
 class Spidy::DefinitionFile
   attr_reader :path
   attr_reader :definition
-  delegate :spiders, :scrapers, :output, to: :definition
+  delegate :namespace, :spiders, to: :definition
 
   CSV = lambda do |result|
     ::CSV.generate do |csv|

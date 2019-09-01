@@ -6,5 +6,11 @@
 module Spidy::Connector
   extend ActiveSupport::Autoload
   autoload :Html
-  autoload :Xml
+  autoload :Json
+
+  def self.get(name)
+    return unless name.is_a?(String) || name.is_a?(Symbol)
+
+    const_get(name.to_s.classify)
+  end
 end

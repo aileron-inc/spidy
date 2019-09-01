@@ -3,15 +3,21 @@
 
 require 'spidy'
 
-case ARGV[0]&.to_sym
-when :spider then Spidy.open(ARGV[1]).shell.spider(ARGV[2])
-when :scraper then Spidy.open(ARGV[1]).shell.scraper(ARGV[2])
-when :shell then Spidy.open(ARGV[1]).shell.function
-when :new then Spidy.open(ARGV[1]).shell.build
-when :console
+if ARGV[0]&.to_sym == :console
   if ARGV[1].blank?
     Spidy.console
   else
     Spidy.open(ARGV[1]).console
   end
+  return
+end
+
+shell = Spidy.open(ARGV[1]).shell
+
+case ARGV[0]&.to_sym
+when :shell then shell.function
+when :call then shell.call(ARGV[2])
+when :each then shell.each(ARGV[2])
+else
+  fail 'usage: spidy [call shell new console] [file]'
 end
