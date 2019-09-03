@@ -74,7 +74,7 @@ class Spidy::Shell
     return command.call(&output_yielder) unless FileTest.pipe?(STDIN)
 
     STDIN.each do |line|
-      command.call(line.strip, &yielder)
+      command.call(line.strip, &output_yielder)
     rescue StandardError => e
       STDERR.puts("#{line.strip} => \n #{e.message}")
     end
