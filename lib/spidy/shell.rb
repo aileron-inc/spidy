@@ -7,10 +7,19 @@ require 'pry'
 #
 class Spidy::Shell
   attr_reader :definition_file
+  class_attribute :output_yielder, default: (proc { |result| STDOUT.puts(result.to_s) })
   delegate :namespace, :spiders, to: :definition_file
 
   def initialize(definition_file)
     @definition_file = definition_file
+  end
+
+  def call(name)
+    exec(namespace[name&.to_sym] || namespace.values.first)
+  end
+
+  def each(name)
+    exec(spiders[name&.to_sym] || spiders.values.first)
   end
 
   def function
@@ -24,8 +33,22 @@ class Spidy::Shell
     SHELL
   end
 
-  # rubocop:disable Metrics/MethodLength
   def build(name)
+    build_shell(name)
+    build_ruby(name)
+  end
+
+  def build_shell(name)
+    File.open("#{name}.sh", 'w') do |f|
+      f.write <<~SHELL
+        #!/bin/bash
+        eval "$(spidy $(dirname "${0}")/#{name}.rb shell)"
+        spider example
+      SHELL
+    end
+  end
+
+  def build_ruby(name)
     File.open("#{name}.rb", 'w') do |f|
       f.write <<~RUBY
         # frozen_string_literal: true
@@ -42,35 +65,18 @@ class Spidy::Shell
         end
       RUBY
     end
-
-    File.open("#{name}.sh", 'w') do |f|
-      f.write <<~SHELL
-        #!/bin/bash
-        eval "$(spidy $(dirname "${0}")/#{name}.rb shell)"
-        spider example
-      SHELL
-    end
-  end
-  # rubocop:enable Metrics/MethodLength
-
-  def call(name)
-    exec(namespace[name&.to_sym] || namespace.values.first)
-  end
-
-  def each(name)
-    exec(spiders[name&.to_sym] || spiders.values.first)
   end
 
   private
 
   def exec(command)
     fail "undefined commmand[#{name}]" if command.nil?
+    return command.call(&output_yielder) unless FileTest.pipe?(STDIN)
 
-    yielder = proc { |result| STDOUT.puts(result.to_s) }
-    if FileTest.pipe?(STDIN)
-      STDIN.each { |line| command.call(line.strip, &yielder) }
-    else
-      command.call(&yielder)
+    STDIN.each do |line|
+      command.call(line.strip, &yielder)
+    rescue StandardError => e
+      STDERR.puts("#{line.strip} => \n #{e.message}")
     end
   end
 end
