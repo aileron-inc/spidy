@@ -2,22 +2,23 @@
 # frozen_string_literal: true
 
 require 'spidy'
+require 'pry'
 
-if ARGV[0]&.to_sym == :console
-  if ARGV[1].blank?
-    Spidy.console
+if ARGV[1].blank?
+  case ARGV[0]
+  when 'version' then STDOUT.puts(Spidy::VERSION)
+  when 'console' then Spidy.console
   else
-    Spidy.open(ARGV[1]).console
+    STDOUT.puts 'usage: spidy [version console]'
   end
-  return
-end
-
-shell = Spidy.open(ARGV[1]).shell
-
-case ARGV[0]&.to_sym
-when :shell then shell.function
-when :call then shell.call(ARGV[2])
-when :each then shell.each(ARGV[2])
 else
-  fail 'usage: spidy [call shell new console] [file]'
+  spidy = Spidy.open(ARGV[1])
+  case ARGV[0]
+  when 'console' then spidy.console
+  when 'shell' then spidy.shell.function
+  when 'call' then spidy.shell.call(ARGV[2])
+  when 'each' then spidy.shell.each(ARGV[2])
+  else
+    STDOUT.puts 'usage: spidy [call each shell] [file]'
+  end
 end

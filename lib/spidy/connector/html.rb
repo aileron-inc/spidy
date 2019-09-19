@@ -13,13 +13,28 @@ module Spidy::Connector::Html
     'Safari/537.36'
   ].join(' ')
 
-  def self.call(url, encoding: nil, &yielder)
-    agent = Mechanize.new
-    if encoding
-      agent.default_encoding = encoding
-      agent.force_default_encoding = true
+  @agent = Mechanize.new
+  @agent.user_agent = USER_AGENT
+
+  class << self
+    def call(url, encoding: nil, &yielder)
+      if encoding
+        @agent.default_encoding = encoding
+        @agent.force_default_encoding = true
+      end
+      get(url, yielder)
     end
-    agent.user_agent = USER_AGENT
-    agent.get(url, &yielder)
+
+    def get(url, yielder)
+      @agent.get(url, &yielder)
+    rescue Mechanize::ResponseCodeError => e
+      case e.response_code
+      when '429'
+        sleep 2
+        @agent.get(url, &yielder)
+      else
+        raise e
+      end
+    end
   end
 end

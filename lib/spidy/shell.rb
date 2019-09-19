@@ -76,7 +76,7 @@ class Spidy::Shell
     STDIN.each do |line|
       command.call(line.strip, &output_yielder)
     rescue StandardError => e
-      STDERR.puts("#{line.strip} => \n #{e.message}")
+      STDERR.puts("#{line.strip}\n #{e.message}")
     end
   end
 end
