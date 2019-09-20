@@ -17,21 +17,26 @@ module Spidy::Connector::Html
   @agent.user_agent = USER_AGENT
 
   class << self
-    def call(url, encoding: nil, &yielder)
+    attr_reader :agent
+
+    def call(url, encoding: nil, retry_count: 3, &yielder)
       if encoding
         @agent.default_encoding = encoding
         @agent.force_default_encoding = true
       end
-      get(url, yielder)
+      get(url, retry_count, yielder)
     end
 
-    def get(url, yielder)
+    private
+
+    def get(url, retry_count, yielder)
       @agent.get(url, &yielder)
     rescue Mechanize::ResponseCodeError => e
+      retry_count -= 1
       case e.response_code
       when '429'
         sleep 2
-        @agent.get(url, &yielder)
+        retry if retry_count
       else
         raise e
       end
