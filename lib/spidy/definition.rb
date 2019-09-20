@@ -25,7 +25,7 @@ class Spidy::Definition
 
     def define_proc(connector, binder, define_block)
       proc do |url, &yielder|
-        fail 'invalid argument [Required url / block]' if url.blank? || yielder.nil?
+        fail 'invalid argument [Required url / block]' if url.blank? && yielder.nil?
 
         connection_yielder = lambda do |resource|
           binder.call(resource, define_block) { |object| yielder.call(object) }

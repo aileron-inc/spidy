@@ -5,6 +5,6 @@
 #
 module Spidy::Connector::Json
   def self.call(url, &yielder)
-    OpenURI.open_uri(url) { |body| yielder.call(JSON.parse(body)) }
+    OpenURI.open_uri(url) { |body| yielder.call(JSON.parse(body.read)) }
   end
 end

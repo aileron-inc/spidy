@@ -19,11 +19,11 @@ class Spidy::Console
     @definition_file&.eval_definition
   end
 
-  def call(name, url = nil, &block)
+  def call(name = :default, url = nil, &block)
     namespace[name].call(url, &block)
   end
 
-  def each(name, url = nil, &block)
+  def each(name = :default, url = nil, &block)
     spiders[name].call(url, &block)
   end
 end
