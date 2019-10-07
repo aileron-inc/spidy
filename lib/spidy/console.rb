@@ -5,7 +5,7 @@
 #
 class Spidy::Console
   attr_reader :definition_file
-  delegate :namespace, :spiders, to: :definition_file
+  delegate :spidy, to: :definition_file
 
   def initialize(definition_file = nil)
     @definition_file = definition_file
@@ -20,10 +20,10 @@ class Spidy::Console
   end
 
   def call(name = :default, url = nil, &block)
-    namespace[name].call(url, &block)
+    spidy.call(name, url: url, &block)
   end
 
   def each(name = :default, url = nil, &block)
-    spiders[name].call(url, &block)
+    spidy.each(name, url: url, &block)
   end
 end

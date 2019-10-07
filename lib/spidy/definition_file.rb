@@ -5,14 +5,7 @@
 #
 class Spidy::DefinitionFile
   attr_reader :path
-  attr_reader :definition
-  delegate :namespace, :spiders, to: :definition
-
-  CSV = lambda do |result|
-    ::CSV.generate do |csv|
-      csv << result.definition.attributes_to_array
-    end
-  end
+  attr_reader :spidy
 
   def self.open(filepath)
     object = new(filepath)
@@ -22,7 +15,7 @@ class Spidy::DefinitionFile
 
   # rubocop:disable Security/Eval
   def eval_definition
-    @definition = eval(File.open(path).read)
+    @spidy = eval(File.open(path).read)
   end
   # rubocop:enable Security/Eval
 

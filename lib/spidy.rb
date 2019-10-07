@@ -29,6 +29,12 @@ module Spidy
   end
 
   def self.define(&block)
-    Class.new(::Spidy::Definition, &block)
+    Module.new do
+      class_eval do
+        extend ::Spidy::Definition
+        module_eval(&block)
+      end
+    end
+    # Module.new(::Spidy::Definition, &block)
   end
 end

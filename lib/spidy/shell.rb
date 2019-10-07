@@ -6,20 +6,25 @@ require 'pry'
 # spidy shell interface
 #
 class Spidy::Shell
-  attr_reader :definition_file
-  class_attribute :output_yielder, default: (proc { |result| STDOUT.puts(result.to_s) })
-  delegate :namespace, :spiders, to: :definition_file
+  attr_reader :definition_file, :spidy
+  class_attribute :output, default: (proc { |result| STDOUT.puts(result.to_s) })
+  class_attribute :error_handler, default: (proc { |e, url| STDERR.puts("#{url}\n #{e.message}") })
+  delegate :spidy, to: :definition_file
 
   def initialize(definition_file)
     @definition_file = definition_file
   end
 
   def call(name)
-    exec(namespace[name&.to_sym] || namespace.values.first)
+    return spidy.call(name, stream: STDIN, err: error_handler, &output) if FileTest.pipe?(STDIN)
+
+    spidy.call(name, err: error_handler, &output)
   end
 
   def each(name)
-    exec(spiders[name&.to_sym] || spiders.values.first)
+    return spidy.each(name, stream: STDIN, err: error_handler, &output) if FileTest.pipe?(STDIN)
+
+    spidy.each(name, err: error_handler, &output)
   end
 
   def function
@@ -64,19 +69,6 @@ class Spidy::Shell
           end
         end
       RUBY
-    end
-  end
-
-  private
-
-  def exec(command)
-    fail "undefined commmand[#{name}]" if command.nil?
-    return command.call(&output_yielder) unless FileTest.pipe?(STDIN)
-
-    STDIN.each do |line|
-      command.call(line.strip, &output_yielder)
-    rescue StandardError => e
-      STDERR.puts("#{line.strip}\n #{e.message}")
     end
   end
 end

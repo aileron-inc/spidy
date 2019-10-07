@@ -25,3 +25,6 @@ Metrics/BlockLength:
 
 SignalException:
   EnforcedStyle: semantic
+
+Layout/EmptyLineAfterGuardClause:
+  Enabled: false

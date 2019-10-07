@@ -20,7 +20,44 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+### When used from the command line
+
+website.rb
+```rb
+Spidy.defin do
+  spider(as: :html) do |yielder, connector, url|
+    connector.call(url) do |html|
+      # html as nokogiri object ( mechanize )
+      yielder.call(url)
+    end
+  end
+
+  define(as: :html) do
+    let(:object_name, 'nokogiri query')
+  end
+end
+```
+```bash
+echo 'http://example.com' | spidy each website.rb > urls
+cat urls | spidy call website.rb > website.json
+# shorthands
+echo 'http://example.com' | spidy each website.rb | spidy call website.rb | jq .
+```
+
+### When used from the ruby code
+``
+a = Spidy.define do
+  # Implementing spiders and scrapers
+end
+
+a.each(url) do |url|
+  # Loop for the number of retrieved URLs
+end
+
+a.call(url) do |object|
+  # The scrape result is passed as a defined object
+end
+```
 
 ## Development
 

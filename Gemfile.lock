@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    spidy (0.0.7)
+    spidy (0.0.8)
       activemodel (~> 5.2)
       activesupport (~> 5.2)
       mechanize
