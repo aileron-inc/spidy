@@ -30,8 +30,8 @@ module Spidy::Definition
 
   def define(name = :default, connector: nil, binder: nil, as: nil, &define_block)
     @namespace ||= {}
-    connector = Spidy::Connector.get(as || connector) || connector
-    binder = Spidy::Binder.get(as || binder) || binder
+    connector = Spidy::Connector.get(connector || as)
+    binder = Spidy::Binder.get(binder || as)
     @namespace["#{name}_scraper"] = define_proc(connector, binder, define_block)
   end
 

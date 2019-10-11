@@ -8,9 +8,9 @@ module Spidy::Binder
   autoload :Json
   autoload :Html
 
-  def self.get(name)
-    return unless name.is_a?(String) || name.is_a?(Symbol)
+  def self.get(value)
+    return const_get(value.to_s.classify) if name.is_a?(String) || name.is_a?(Symbol)
 
-    const_get(name.to_s.classify)
+    value
   end
 end

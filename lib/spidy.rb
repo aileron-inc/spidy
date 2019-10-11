@@ -35,6 +35,5 @@ module Spidy
         module_eval(&block)
       end
     end
-    # Module.new(::Spidy::Definition, &block)
   end
 end
