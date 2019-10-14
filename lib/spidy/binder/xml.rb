@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
 #
-# Bind json and convert to object
+# Bind xml and convert to object
 #
-module Spidy::Binder::Json
+module Spidy::Binder::Xml
   #
   # Describe the definition to get the necessary elements from the resource object
   #
   class Resource
     class_attribute :names, default: []
-    attr_reader :json
+    attr_reader :xml
 
-    def initialize(json)
-      @json = json
+    def initialize(xml)
+      @xml = xml
     end
 
     def to_s
@@ -23,19 +23,21 @@ module Spidy::Binder::Json
       names.map { |name| [name, send(name)] }.to_h
     end
 
-    def self.let(name, *query, &block)
+    def self.let(name, query = nil, &block)
       names << name
       define_method(name) do
-        result = json.dig(*query) if query.present?
-        return result if block.nil?
+        return xml.at(query)&.text if block.nil?
+        return instance_exec(&block) if query.blank?
 
-        instance_exec(result, &block)
+        instance_exec(xml.search(query), &block)
+      rescue NoMethodError => e
+        raise "#{xml} ##{name} => #{e.message}"
       end
     end
   end
 
-  def self.call(resource, define_block)
+  def self.call(xml, define_block)
     binder = Class.new(Resource) { instance_exec(&define_block) }
-    yield binder.new(resource)
+    yield binder.new(xml)
   end
 end

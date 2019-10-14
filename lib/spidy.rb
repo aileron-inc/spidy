@@ -2,9 +2,7 @@
 
 require 'spidy/version'
 require 'active_support/all'
-require 'active_model'
 require 'mechanize'
-require 'csv'
 require 'open-uri'
 
 #
