@@ -19,11 +19,11 @@ class Spidy::Console
     @definition_file&.eval_definition
   end
 
-  def call(name = :default, url: nil, &block)
+  def call(name = nil, url: nil, &block)
     spidy.call(name, url: url, &block)
   end
 
-  def each(name = :default, url: nil, &block)
+  def each(name = nil, url: nil, &block)
     spidy.each(name, url: url, &block)
   end
 end

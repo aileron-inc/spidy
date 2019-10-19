@@ -6,7 +6,7 @@
 module Spidy::Definition
   def call(name = :default, url: nil, stream: nil, err: nil, &output)
     name = name.presence || :default
-    spidy = @namespace["#{name}_scraper"]
+    spidy = @namespace[:"#{name}_scraper"]
     fail "undefined spidy [#{name}]" if spidy.nil?
 
     exec(spidy, url: url, stream: stream, err: err, &output)
@@ -14,7 +14,7 @@ module Spidy::Definition
 
   def each(name = :default, url: nil, stream: nil, err: nil, &output)
     name = name.presence || :default
-    spidy = @namespace["#{name}_spider"]
+    spidy = @namespace[:"#{name}_spider"]
     fail "undefined spidy [#{name}]" if spidy.nil?
 
     exec(spidy, url: url, stream: stream, err: err, &output)
@@ -23,7 +23,7 @@ module Spidy::Definition
   def spider(name = :default, connector: nil, as: nil)
     @namespace ||= {}
     connector = Spidy::Connector.get(as || connector) || connector
-    @namespace["#{name}_spider"] = proc do |url, &yielder|
+    @namespace[:"#{name}_spider"] = proc do |url, &yielder|
       yield(yielder, connector, url)
     end
   end
@@ -32,7 +32,7 @@ module Spidy::Definition
     @namespace ||= {}
     connector = Spidy::Connector.get(connector || as)
     binder = Spidy::Binder.get(binder || as)
-    @namespace["#{name}_scraper"] = define_proc(connector, binder, define_block)
+    @namespace[:"#{name}_scraper"] = define_proc(connector, binder, define_block)
   end
 
   private
@@ -51,7 +51,8 @@ module Spidy::Definition
 
   def define_proc(connector, binder, define_block)
     proc do |url, &yielder|
-      fail 'invalid argument [Required url / block]' if url.blank? && yielder.nil?
+      fail 'url is not specified' if url.blank?
+      fail 'block is not specified' if yielder.nil?
 
       connection_yielder = lambda do |resource|
         binder.call(resource, define_block) { |object| yielder.call(object) }
