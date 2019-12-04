@@ -34,6 +34,7 @@ module Spidy::Connector::Html
     attr_accessor :logger
 
     def call(url, encoding: nil, retry_count: 3, &yielder)
+      fail 'url is not specified' if url.blank?
       if encoding
         agent.default_encoding = encoding
         agent.force_default_encoding = true

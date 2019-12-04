@@ -51,7 +51,6 @@ module Spidy::Definition
 
   def define_proc(connector, binder, define_block)
     proc do |url, &yielder|
-      fail 'url is not specified' if url.blank?
       fail 'block is not specified' if yielder.nil?
 
       connection_yielder = lambda do |resource|
