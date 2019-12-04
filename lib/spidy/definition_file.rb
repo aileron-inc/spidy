@@ -19,15 +19,6 @@ class Spidy::DefinitionFile
   end
   # rubocop:enable Security/Eval
 
-  def shell
-    @shell ||= Spidy::Shell.new(self)
-  end
-
-  def console
-    require 'pry'
-    Pry.start(Spidy::Console.new(self))
-  end
-
   private
 
   def initialize(path)

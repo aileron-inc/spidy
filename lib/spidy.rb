@@ -17,13 +17,21 @@ module Spidy
   autoload :Binder
   autoload :Connector
 
-  def self.console
+  def self.console(filepath = nil)
     require 'pry'
-    Pry.start(Spidy::Console.new)
+    if filepath
+      Pry.start(Spidy::Console.new(Spidy::DefinitionFile.open(filepath)))
+    else
+      Pry.start(Spidy::Console.new)
+    end
   end
 
   def self.open(filepath)
-    ::Spidy::DefinitionFile.open(filepath)
+    Spidy::DefinitionFile.open(filepath).spidy
+  end
+
+  def self.shell(filepath)
+    Spidy::Shell.new(Spidy::DefinitionFile.open(filepath))
   end
 
   def self.define(&block)

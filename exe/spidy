@@ -12,12 +12,11 @@ if ARGV[1].blank?
     STDOUT.puts 'usage: spidy [version console]'
   end
 else
-  spidy = Spidy.open(ARGV[1])
   case ARGV[0]
-  when 'console' then spidy.console
-  when 'shell' then spidy.shell.function
-  when 'call' then spidy.shell.call(ARGV[2])
-  when 'each' then spidy.shell.each(ARGV[2])
+  when 'console' then Spidy.console(ARGV[1])
+  when 'shell' then Spidy.shell(ARGV[1]).function
+  when 'call' then Spidy.shell(ARGV[1]).call(ARGV[2])
+  when 'each' then Spidy.shell(ARGV[1]).each(ARGV[2])
   else
     STDOUT.puts 'usage: spidy [call each shell] [file]'
   end
