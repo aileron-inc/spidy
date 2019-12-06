@@ -19,6 +19,10 @@ module Spidy::Binder::Xml
       to_h.to_json
     end
 
+    def url
+      xml.uri.to_s
+    end
+
     def to_h
       names.map { |name| [name, send(name)] }.to_h
     end
