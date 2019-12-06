@@ -9,10 +9,11 @@ module Spidy::Binder::Html
   #
   class Resource
     class_attribute :names, default: []
-    attr_reader :html
+    attr_reader :html, :source
 
     def initialize(html)
       @html = html
+      @source = html.body
     end
 
     def to_s

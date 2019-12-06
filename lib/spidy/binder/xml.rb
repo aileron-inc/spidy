@@ -9,7 +9,7 @@ module Spidy::Binder::Xml
   #
   class Resource
     class_attribute :names, default: []
-    attr_reader :xml
+    attr_reader :xml, :source
 
     def initialize(xml)
       @xml = xml

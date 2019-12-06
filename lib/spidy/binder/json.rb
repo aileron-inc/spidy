@@ -13,6 +13,7 @@ module Spidy::Binder::Json
 
     def initialize(json)
       @json = json
+      @source = json
     end
 
     def to_s
