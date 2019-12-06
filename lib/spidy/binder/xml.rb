@@ -13,6 +13,7 @@ module Spidy::Binder::Xml
 
     def initialize(xml)
       @xml = xml
+      @source = xml.to_s
     end
 
     def to_s
