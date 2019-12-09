@@ -10,7 +10,7 @@ class Spidy::Binder::Json
   def initialize(json, url: nil)
     @json = json
     @url = url
-    @source = json
+    @source = json.to_json
   end
 
   def to_s
