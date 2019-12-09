@@ -54,7 +54,7 @@ module Spidy::Definition
       fail 'block is not specified' if yielder.nil?
 
       connection_yielder = lambda do |resource|
-        binder.call(resource, define_block) { |object| yielder.call(object) }
+        binder.call(resource, url: url, define: define_block) { |object| yielder.call(object) }
       end
       connector.call(url, &connection_yielder)
     end
