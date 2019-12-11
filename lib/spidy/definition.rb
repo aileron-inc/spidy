@@ -4,6 +4,10 @@
 # Class representing a website defined by DSL
 #
 module Spidy::Definition
+  def namespace
+    @namespace
+  end
+
   def call(name = :default, url: nil, stream: nil, err: nil, &output)
     name = name.presence || :default
     spidy = @namespace[:"#{name}_scraper"]
