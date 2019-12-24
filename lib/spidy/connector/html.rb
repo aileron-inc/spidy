@@ -8,10 +8,12 @@ module Spidy::Connector::Html
   # retry class
   #
   class Retry < StandardError
+    attr_reader :page
     attr_reader :response_code
     attr_reader :wait_time
 
     def initialize(wait_time: 2, page: nil, error: nil)
+      @page = page
       @wait_time = wait_time
       @response_code = error.try(:response_code) || page.try(:response_code)
     end
@@ -33,7 +35,7 @@ module Spidy::Connector::Html
     attr_reader :agent
     attr_accessor :logger
 
-    def call(url, encoding: nil, retry_count: 3, &yielder)
+    def call(url, encoding: nil, retry_count: 5, &yielder)
       fail 'url is not specified' if url.blank?
       if encoding
         agent.default_encoding = encoding
@@ -45,16 +47,8 @@ module Spidy::Connector::Html
 
     private
 
-    # rubocop:disable Metrics/MethodLength
     def get(url, retry_count, yielder)
-      agent.get(url) do |page|
-        fail Retry, page: page, wait_time: 5 if page.title == 'Sorry, unable to access page...'
-
-        yielder.call(page)
-      end
-    rescue Mechanize::ResponseCodeError => e
-      raise Retry, error: e if e.response_code == '429'
-      raise e
+      connect(url, retry_count, yielder)
     rescue Retry => e
       logger.call('retry.accessed': Time.current,
                   'retry.uri': url,
@@ -71,6 +65,19 @@ module Spidy::Connector::Html
       end
       raise e
     end
-    # rubocop:enable Metrics/MethodLength
+
+    def connect(url, retry_count, yielder)
+      result = nil
+      agent.get(url) do |page|
+        fail Retry, page: page, wait_time: 5 if page.title == 'Sorry, unable to access page...'
+
+        result = yielder.call(page)
+      end
+      result
+    rescue Mechanize::ResponseCodeError => e
+      raise Retry, error: e if e.response_code == '429'
+      raise e
+    end
+
   end
 end
