@@ -27,7 +27,7 @@ class Spidy::Binder::Html
       return html.at(query)&.text if block.nil?
       return instance_exec(&block) if query.blank?
 
-      instance_exec(html.search(query), &block)
+      instance_exec(html.at(query), &block)
     rescue NoMethodError => e
       raise "#{html.uri} ##{name} => #{e.message}"
     end
