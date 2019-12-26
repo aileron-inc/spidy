@@ -4,7 +4,23 @@
 # Bind xml and convert to object
 #
 class Spidy::Binder::Xml
-  class_attribute :names, default: []
+  class << self
+    attr_reader :names
+    @names = []
+
+    def self.let(name, query = nil, &block)
+      @names << name
+      define_method(name) do
+        return xml.at(query)&.text if block.nil?
+        return instance_exec(&block) if query.blank?
+
+        instance_exec(xml.at(query), &block)
+      rescue NoMethodError => e
+        raise "#{xml} ##{name} => #{e.message}"
+      end
+    end
+  end
+
   attr_reader :xml, :source, :url
 
   def initialize(xml, url: nil)
@@ -18,18 +34,6 @@ class Spidy::Binder::Xml
   end
 
   def to_h
-    names.map { |name| [name, send(name)] }.to_h
-  end
-
-  def self.let(name, query = nil, &block)
-    names << name
-    define_method(name) do
-      return xml.at(query)&.text if block.nil?
-      return instance_exec(&block) if query.blank?
-
-      instance_exec(xml.at(query), &block)
-    rescue NoMethodError => e
-      raise "#{xml} ##{name} => #{e.message}"
-    end
+    self.class.names.map { |name| [name, send(name)] }.to_h
   end
 end

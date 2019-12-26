@@ -4,7 +4,23 @@
 # Bind html and convert to object
 #
 class Spidy::Binder::Html
-  class_attribute :names, default: []
+  class << self
+    attr_reader :names
+
+    @names = []
+    def let(name, query = nil, &block)
+      @names << name
+      define_method(name) do
+        return html.at(query)&.text if block.nil?
+        return instance_exec(&block) if query.blank?
+
+        instance_exec(html.at(query), &block)
+      rescue NoMethodError => e
+        raise "#{html.uri} ##{name} => #{e.message}"
+      end
+    end
+  end
+
   attr_reader :html, :source, :url
 
   def initialize(html, url: nil)
@@ -18,18 +34,6 @@ class Spidy::Binder::Html
   end
 
   def to_h
-    names.map { |name| [name, send(name)] }.to_h
-  end
-
-  def self.let(name, query = nil, &block)
-    names << name
-    define_method(name) do
-      return html.at(query)&.text if block.nil?
-      return instance_exec(&block) if query.blank?
-
-      instance_exec(html.at(query), &block)
-    rescue NoMethodError => e
-      raise "#{html.uri} ##{name} => #{e.message}"
-    end
+    self.class.names.map { |name| [name, send(name)] }.to_h
   end
 end
