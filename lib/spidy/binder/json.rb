@@ -21,6 +21,7 @@ class Spidy::Binder::Json
   end
 
   attr_reader :json, :url
+  alias_method :resource, :json
 
   def initialize(json, url: nil)
     @json = json

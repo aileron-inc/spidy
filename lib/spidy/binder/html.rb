@@ -22,6 +22,7 @@ class Spidy::Binder::Html
   end
 
   attr_reader :html, :url
+  alias_method :resource, :html
 
   def initialize(html, url: nil)
     @url = url

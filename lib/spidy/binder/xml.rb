@@ -22,6 +22,7 @@ class Spidy::Binder::Xml
   end
 
   attr_reader :xml, :url
+  alias_method :resource, :xml
 
   def initialize(xml, url: nil)
     @xml = xml
