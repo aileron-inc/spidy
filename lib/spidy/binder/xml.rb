@@ -5,11 +5,11 @@
 #
 class Spidy::Binder::Xml
   class << self
-    attr_reader :names
-    @names = []
+    attr_reader :attribute_names
 
     def self.let(name, query = nil, &block)
-      @names << name
+      @attribute_names ||= []
+      @attribute_names << name
       define_method(name) do
         return xml.at(query)&.text if block.nil?
         return instance_exec(&block) if query.blank?
@@ -34,6 +34,6 @@ class Spidy::Binder::Xml
   end
 
   def to_h
-    self.class.names.map { |name| [name, send(name)] }.to_h
+    self.class.attribute_names.map { |name| [name, send(name)] }.to_h
   end
 end
