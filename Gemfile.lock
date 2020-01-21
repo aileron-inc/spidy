@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    spidy (0.0.21)
+    spidy (0.0.24)
       activesupport
       mechanize
       pry
@@ -21,6 +21,7 @@ GEM
     diff-lcs (1.3)
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
+    ffaker (2.10.0)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
     i18n (1.7.0)
@@ -77,6 +78,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (~> 2.0)
+  ffaker
   pry
   rake (~> 10.0)
   rspec (~> 3.0)

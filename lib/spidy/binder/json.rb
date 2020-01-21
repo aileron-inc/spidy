@@ -20,12 +20,11 @@ class Spidy::Binder::Json
     end
   end
 
-  attr_reader :json, :source, :url
+  attr_reader :json, :url
 
   def initialize(json, url: nil)
     @json = json
     @url = url
-    @source = json.to_json
   end
 
   def to_s

@@ -8,27 +8,27 @@ module Spidy::Definition
     @namespace
   end
 
-  def call(name = :default, url: nil, stream: nil, err: nil, &output)
+  def call(source = nil, name: :default, &yielder)
     name = name.presence || :default
     spidy = @namespace[:"#{name}_scraper"]
     fail "undefined spidy [#{name}]" if spidy.nil?
 
-    exec(spidy, url: url, stream: stream, err: err, &output)
+    spidy.call(source, &yielder)
   end
 
-  def each(name = :default, url: nil, stream: nil, err: nil, &output)
+  def each(source = nil, name: :default, &yielder)
     name = name.presence || :default
     spidy = @namespace[:"#{name}_spider"]
     fail "undefined spidy [#{name}]" if spidy.nil?
 
-    exec(spidy, url: url, stream: stream, err: err, &output)
+    spidy.call(source, &yielder)
   end
 
-  def spider(name = :default, connector: nil, as: nil)
+  def spider(name = :default, connector: nil, as: nil, &define_block)
     @namespace ||= {}
-    connector = Spidy::Connector.get(as || connector) || connector
-    @namespace[:"#{name}_spider"] = proc do |url, &yielder|
-      yield(yielder, connector, url)
+    connector = Spidy::Connector.get(connector || as)
+    @namespace[:"#{name}_spider"] = proc do |source, &yielder|
+      define_block.call(yielder, connector, source)
     end
   end
 
@@ -41,26 +41,14 @@ module Spidy::Definition
 
   private
 
-  def exec(spidy, url: nil, stream: nil, err: nil, &output)
-    return spidy.call(url, &output) if stream.nil?
-
-    stream.each do |value|
-      spidy.call(value.strip, &output)
-    rescue StandardError => e
-      raise e if err.nil?
-
-      err.call(e, value.strip)
-    end
-  end
-
   def define_proc(connector, binder, define_block)
-    proc do |url, &yielder|
+    proc do |source, &yielder|
       fail 'block is not specified' if yielder.nil?
 
-      connection_yielder = lambda do |resource|
-        binder.call(resource, url: url, define: define_block) { |object| yielder.call(object) }
+      connection_yielder = lambda do |page|
+        binder.call(page, url: source, define: define_block) { |object| yielder.call(object) }
       end
-      connector.call(url, &connection_yielder)
+      connector.call(source, &connection_yielder)
     end
   end
 end

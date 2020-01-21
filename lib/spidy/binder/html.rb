@@ -5,11 +5,11 @@
 #
 class Spidy::Binder::Html
   class << self
-    attr_reader :names
+    attr_reader :attribute_names
 
-    @names = []
     def let(name, query = nil, &block)
-      @names << name
+      @attribute_names ||= []
+      @attribute_names << name
       define_method(name) do
         return html.at(query)&.text if block.nil?
         return instance_exec(&block) if query.blank?
@@ -21,12 +21,11 @@ class Spidy::Binder::Html
     end
   end
 
-  attr_reader :html, :source, :url
+  attr_reader :html, :url
 
   def initialize(html, url: nil)
-    @html = html
     @url = url
-    @source = html.body
+    @html = html
   end
 
   def to_s
@@ -34,6 +33,6 @@ class Spidy::Binder::Html
   end
 
   def to_h
-    self.class.names.map { |name| [name, send(name)] }.to_h
+    self.class.attribute_names.map { |name| [name, send(name)] }.to_h
   end
 end

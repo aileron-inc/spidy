@@ -18,18 +18,10 @@ module Spidy::Connector::Html
       @response_code = error.try(:response_code) || page.try(:response_code)
     end
   end
-  USER_AGENT = [
-    'Mozilla/5.0',
-    '(Macintosh; Intel Mac OS X 10_12_6)',
-    'AppleWebKit/537.36',
-    '(KHTML, like Gecko)',
-    'Chrome/64.0.3282.186',
-    'Safari/537.36'
-  ].join(' ')
 
-  @logger = proc { |values| STDERR.puts(values.map { |k, v| "#{k}:#{v}" }.join("\t")) }
+  @logger = proc { |values| STDERR.puts(values.to_json) }
   @agent = Mechanize.new
-  @agent.user_agent = USER_AGENT
+  @agent.user_agent = Spidy::Connector::USER_AGENT
 
   class << self
     attr_reader :agent
@@ -56,7 +48,7 @@ module Spidy::Connector::Html
                   'retry.rest_count': retry_count)
 
       @agent = Mechanize.new
-      @agent.user_agent = USER_AGENT
+      @agent.user_agent = Spidy::Connector::USER_AGENT
 
       retry_count -= 1
       if retry_count.positive?

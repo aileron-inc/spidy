@@ -21,12 +21,11 @@ class Spidy::Binder::Xml
     end
   end
 
-  attr_reader :xml, :source, :url
+  attr_reader :xml, :url
 
   def initialize(xml, url: nil)
     @xml = xml
     @url = url
-    @source = xml.to_s
   end
 
   def to_s

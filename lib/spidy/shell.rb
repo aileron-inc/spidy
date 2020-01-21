@@ -8,23 +8,45 @@ require 'pry'
 class Spidy::Shell
   attr_reader :definition_file, :spidy
   class_attribute :output, default: (proc { |result| STDOUT.puts(result.to_s) })
-  class_attribute :error_handler, default: (proc { |e, url| STDERR.puts("#{url}\n #{e.message}") })
+  class_attribute :error_handler, default: (proc { |e, url| STDERR.puts({ url: url, message: e.message, backtrace: e.backtrace }.to_json) })
   delegate :spidy, to: :definition_file
 
   def initialize(definition_file)
     @definition_file = definition_file
   end
 
-  def call(name)
-    return spidy.call(name, stream: STDIN, err: error_handler, &output) if FileTest.pipe?(STDIN)
+  def each_stdin_lines(name)
+    STDIN.each_line do |url|
+      begin
+        spidy.each(url.strip, name: name, &output)
+      rescue => e
+        error_handler.call(e, url)
+      end
+    end
+  end
 
-    spidy.call(name, err: error_handler, &output)
+  def call_stdin_lines(name)
+    STDIN.each_line do |url|
+      begin
+        spidy.call(url.strip, name: name, &output)
+      rescue => e
+        error_handler.call(e, url)
+      end
+    end
+  end
+
+  def call(name)
+    return call_stdin_lines(name) if FileTest.pipe?(STDIN)
+    spidy.call(name: name, &output) unless FileTest.pipe?(STDIN)
+  rescue => e
+    error_handler.call(e, nil)
   end
 
   def each(name)
-    return spidy.each(name, stream: STDIN, err: error_handler, &output) if FileTest.pipe?(STDIN)
-
-    spidy.each(name, err: error_handler, &output)
+    return each_stdin_lines(name) if FileTest.pipe?(STDIN)
+    spidy.each(name: name, &output)
+  rescue => e
+    error_handler.call(e, nil)
   end
 
   def function
