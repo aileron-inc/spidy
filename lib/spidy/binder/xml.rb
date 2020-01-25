@@ -7,7 +7,7 @@ class Spidy::Binder::Xml
   class << self
     attr_reader :attribute_names
 
-    def self.let(name, query = nil, &block)
+    def let(name, query = nil, &block)
       @attribute_names ||= []
       @attribute_names << name
       define_method(name) do
