@@ -24,9 +24,14 @@ class Spidy::Binder::Html
   attr_reader :html, :url
   alias_method :resource, :html
 
-  def initialize(html, url: nil)
+  def initialize(spidy, html, url)
+    @spidy = spidy
     @url = url
     @html = html
+  end
+
+  def scraper(name, source)
+    lambda { |&block| @spidy.call(source, name: name, &block) }
   end
 
   def to_s

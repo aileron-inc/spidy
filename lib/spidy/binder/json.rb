@@ -22,9 +22,14 @@ class Spidy::Binder::Json
   attr_reader :json, :url
   alias_method :resource, :json
 
-  def initialize(json, url: nil)
+  def initialize(spidy, json, url)
+    @spidy = spidy
     @json = json
     @url = url
+  end
+
+  def scraper(name, source)
+    lambda { |&block| @spidy.call(source, name: name, &block) }
   end
 
   def to_s

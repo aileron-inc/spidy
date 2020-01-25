@@ -24,9 +24,14 @@ class Spidy::Binder::Xml
   attr_reader :xml, :url
   alias_method :resource, :xml
 
-  def initialize(xml, url: nil)
+  def initialize(spidy, xml, url)
+    @spidy = spidy
     @xml = xml
     @url = url
+  end
+
+  def scraper(name, source)
+    lambda { |&block| @spidy.call(source, name: name, &block) }
   end
 
   def to_s

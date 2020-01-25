@@ -44,15 +44,25 @@ RSpec.describe 'Master detail page' do
           }
           doc.h1("title_#{id}", id: 'title')
           doc.main("body_#{id}", id: 'body')
+          doc.div.sub do
+            doc.span.name('testtest')
+          end
         }
       }
     }.doc)
   }
 
   spidy = Spidy.define do
+    define(:sub, as: :html, connector: :direct) do
+      let(:name, '.name')
+    end
     define(as: :html, connector: detail_page) do
       let(:title, '#title')
       let(:body, '#body')
+
+      def sub
+        scraper(:sub, html)
+      end
     end
     spider(as: :html, connector: master_page) do |yielder, connector|
       next_url = 'http://localhost'
@@ -83,6 +93,10 @@ RSpec.describe 'Master detail page' do
     spidy.call(url) do |page|
       expect(page.title).to be_present
       expect(page.body).to be_present
+
+      page.sub.call do |sub_page|
+        expect(sub_page.name).to eq('testtest')
+      end
     end
   end
 end
