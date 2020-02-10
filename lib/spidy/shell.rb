@@ -9,7 +9,7 @@ class Spidy::Shell
   end
 
   def interactive
-    Pry.new(Spidy::Console.new(@definition_file))
+    Pry.start(Spidy::Console.new(@definition_file))
   end
 
   def command_line
