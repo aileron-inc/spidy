@@ -15,7 +15,7 @@ class Spidy::DefinitionFile
 
   # rubocop:disable Security/Eval
   def eval_definition
-    @spidy = eval(File.open(path).read)
+    @spidy = eval(File.open(path).read) if path
   end
   # rubocop:enable Security/Eval
 

@@ -44,6 +44,21 @@ cat urls | spidy call website.rb > website.json
 echo 'http://example.com' | spidy each website.rb | spidy call website.rb | jq .
 ```
 
+### When development console
+```bash
+spidy console website.rb
+```
+
+### reload source code
+```
+pry(#<Spidy::Console>)> reload!
+```
+
+```rb
+each('http://example.com') { |url| break url }
+call('http://example.com') { |html| break html } # html as nokogiri object ( mechanize )
+```
+
 ### When used from the ruby code
 ``
 a = Spidy.define do

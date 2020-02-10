@@ -4,11 +4,10 @@
 # spidy console
 #
 class Spidy::Console
-  attr_reader :definition_file
-  delegate :spidy, to: :definition_file
-  delegate :call, :each, to: :spidy
+  delegate :spidy, to: :@definition_file
+  delegate :call, :each, :namespace, allow_nil: true, to: :spidy
 
-  def initialize(definition_file = nil)
+  def initialize(definition_file)
     @definition_file = definition_file
   end
 
@@ -17,6 +16,6 @@ class Spidy::Console
   end
 
   def reload!
-    @definition_file&.eval_definition
+    @definition_file.eval_definition
   end
 end

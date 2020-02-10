@@ -1,8 +1,6 @@
-# frozen_string_literal: true
 
-require 'spec_helper'
 
-RSpec.describe 'Master detail page' do
+Spidy.define do
   url_to_params = ->(url) {
     uri = URI.parse(url)
     params = URI.decode_www_form(uri.query).to_h if uri.query.present?
@@ -52,50 +50,27 @@ RSpec.describe 'Master detail page' do
     }.doc)
   }
 
-  spidy = Spidy.define do
-    define(:sub, as: :html, connector: :direct) do
-      let(:name, '.name')
+  define(as: :html, connector: detail_page) do
+    def sub
+      scraper(:sub, html)
     end
-    define(as: :html, connector: detail_page) do
-      let(:title, '#title')
-      let(:body, '#body')
 
-      def sub
-        scraper(:sub, html)
-      end
-    end
-    spider(as: :html, connector: master_page) do |yielder, connector|
-      next_url = 'http://localhost'
-      while next_url.present?
-        connector.call(next_url) do |page|
-          page.search('main a').each do |a|
-            yielder.call(a.attr('href'))
-          end
-          next_url = page.at('a.next')&.attr('href')
+    let(:title, '#title')
+    let(:body, '#body')
+  end
+
+  define(:sub, as: :html, connector: :direct) do
+    let(:name, '.name')
+  end
+
+  spider(as: :html, connector: master_page) do |yielder, connector|
+    next_url = 'http://localhost'
+    while next_url.present?
+      connector.call(next_url) do |page|
+        page.search('main a').each do |a|
+          yielder.call(a.attr('href'))
         end
-      end
-    end
-  end
-
-  specify 'each' do
-    last_url = nil
-    count = 0
-    spidy.each do |url|
-      last_url = last_url
-      count += 1
-    end
-    expect(count).to eq(100)
-  end
-
-  specify 'call' do
-    url = spidy.each { |url| break url }
-    expect(url).to eq('http://localhost/?id=1')
-    spidy.call(url) do |page|
-      expect(page.title).to be_present
-      expect(page.body).to be_present
-
-      page.sub.call do |sub_page|
-        expect(sub_page.name).to eq('testtest')
+        next_url = page.at('a.next')&.attr('href')
       end
     end
   end

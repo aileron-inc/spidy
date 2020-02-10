@@ -7,17 +7,17 @@ require 'pry'
 if ARGV[1].blank?
   case ARGV[0]
   when 'version' then STDOUT.puts(Spidy::VERSION)
-  when 'console' then Spidy.console
+  when 'console' then Spidy.shell.interactive
   else
     STDOUT.puts 'usage: spidy [version console]'
   end
 else
   case ARGV[0]
-  when 'console' then Spidy.console(ARGV[1])
-  when 'shell' then Spidy.shell(ARGV[1]).function
+  when 'console' then Spidy.shell(ARGV[1]).interactive
+  when 'function' then Spidy.shell(ARGV[1]).function
   when 'call' then Spidy.shell(ARGV[1]).call(ARGV[2])
   when 'each' then Spidy.shell(ARGV[1]).each(ARGV[2])
   else
-    STDOUT.puts 'usage: spidy [call each shell] [file]'
+    STDOUT.puts 'usage: spidy [console function call each] [file]'
   end
 end
