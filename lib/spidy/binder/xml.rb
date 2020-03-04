@@ -15,8 +15,6 @@ class Spidy::Binder::Xml
         return instance_exec(&block) if query.blank?
 
         instance_exec(xml.at(query), &block)
-      rescue NoMethodError => e
-        raise "#{xml} ##{name} => #{e.message}"
       end
     end
   end

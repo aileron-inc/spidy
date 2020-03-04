@@ -15,8 +15,6 @@ class Spidy::Binder::Html
         return instance_exec(&block) if query.blank?
 
         instance_exec(html.at(query), &block)
-      rescue NoMethodError => e
-        raise "#{html.uri} ##{name} => #{e.message}"
       end
     end
   end

@@ -43,8 +43,7 @@ module Spidy::Definition
 
   def define_proc(connector, binder, define_block)
     proc do |source, &yielder|
-      fail 'block is not specified' if yielder.nil?
-
+      yielder = lambda { |result| break result } if yielder.nil?
       connection_yielder = lambda do |page|
         binder.call(page, url: source, define: define_block) { |object| yielder.call(object) }
       end
