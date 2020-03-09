@@ -68,6 +68,7 @@ module Spidy::Connector::Html
       result
     rescue Mechanize::ResponseCodeError => e
       raise Retry, error: e if e.response_code == '429'
+      raise Retry, error: e if e.response_code == '502'
       raise e
     end
 
