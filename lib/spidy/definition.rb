@@ -36,16 +36,16 @@ module Spidy::Definition
     @namespace ||= {}
     connector = Spidy::Connector.get(connector || as)
     binder = Spidy::Binder.get(self, binder || as)
-    @namespace[:"#{name}_scraper"] = define_proc(connector, binder, define_block)
+    @namespace[:"#{name}_scraper"] = define_proc(name, connector, binder, define_block)
   end
 
   private
 
-  def define_proc(connector, binder, define_block)
+  def define_proc(name, connector, binder, define_block)
     proc do |source, &yielder|
       yielder = lambda { |result| break result } if yielder.nil?
       connection_yielder = lambda do |page|
-        binder.call(page, url: source, define: define_block) { |object| yielder.call(object) }
+        binder.call(page, url: source, define: define_block, define_name: name) { |object| yielder.call(object) }
       end
       connector.call(source, &connection_yielder)
     end
