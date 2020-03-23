@@ -60,7 +60,7 @@ call('http://example.com') { |html| break html } # html as nokogiri object ( mec
 ```
 
 ### When used from the ruby code
-``
+```rb
 a = Spidy.define do
   # Implementing spiders and scrapers
 end
