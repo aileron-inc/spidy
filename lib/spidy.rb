@@ -10,7 +10,6 @@ require 'open-uri'
 #
 module Spidy
   extend ActiveSupport::Autoload
-  autoload :Interface
   autoload :Shell
   autoload :CommandLine
   autoload :Console
@@ -34,6 +33,10 @@ module Spidy
         module_eval(&block)
       end
     end
-    Spidy::Interface.new(spidy)
+    spidy.instance_eval do
+      undef :spider
+      undef :define
+    end
+    spidy
   end
 end
