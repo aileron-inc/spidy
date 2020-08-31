@@ -18,4 +18,9 @@ class Spidy::Console
   def reload!
     @definition_file.eval_definition
   end
+
+  def connector(url, as:)
+    connector = Spidy::Connector.get(as)
+    connector.call(url) { |page| break page }
+  end
 end

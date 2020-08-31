@@ -3,8 +3,11 @@
 #
 # Direct resource ( not network resource  )
 #
-module Spidy::Connector::Direct
-  def self.call(resource, &yielder)
+class Spidy::Connector::Direct
+  def call(resource, &yielder)
     yielder.call(resource)
+  end
+
+  def initialize(wait_time: nil, user_agent: nil)
   end
 end

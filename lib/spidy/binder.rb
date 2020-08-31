@@ -37,10 +37,6 @@ module Spidy::Binder
       @url = url
     end
 
-    def scraper(name, source)
-      lambda { |&block| @spidy.call(source, name: name, &block) }
-    end
-
     def to_s
       to_h.to_json
     end

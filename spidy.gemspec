@@ -33,5 +33,6 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'activesupport'
   spec.add_runtime_dependency 'mechanize'
+  spec.add_runtime_dependency 'socksify'
   spec.add_runtime_dependency 'pry'
 end

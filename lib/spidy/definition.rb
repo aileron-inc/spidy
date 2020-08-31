@@ -16,6 +16,18 @@ module Spidy::Definition
     spidy.call(source, &yielder)
   end
 
+  def user_agent(user_agent)
+    @user_agent = user_agent
+  end
+
+  def wait_time(wait_time)
+    @wait_time = wait_time
+  end
+
+  def socks_proxy(host, port)
+    @socks_proxy = { host: host, port: port }
+  end
+
   def each(source = nil, name: :default, &yielder)
     name = name.presence || :default
     spidy = @namespace[:"#{name}_spider"]
@@ -26,7 +38,7 @@ module Spidy::Definition
 
   def spider(name = :default, connector: nil, as: nil, &define_block)
     @namespace ||= {}
-    connector = Spidy::Connector.get(connector || as)
+    connector = Spidy::Connector.get(connector || as, wait_time: @wait_time, user_agent: @user_agent, socks_proxy: @socks_proxy)
     @namespace[:"#{name}_spider"] = proc do |source, &yielder|
       define_block.call(yielder, connector, source)
     end
@@ -34,7 +46,7 @@ module Spidy::Definition
 
   def define(name = :default, connector: nil, binder: nil, as: nil, &define_block)
     @namespace ||= {}
-    connector = Spidy::Connector.get(connector || as)
+    connector = Spidy::Connector.get(connector || as, wait_time: @wait_time, user_agent: @user_agent)
     binder = Spidy::Binder.get(self, binder || as)
     @namespace[:"#{name}_scraper"] = define_proc(name, connector, binder, define_block)
   end

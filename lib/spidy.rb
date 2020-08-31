@@ -4,6 +4,7 @@ require 'spidy/version'
 require 'active_support/all'
 require 'mechanize'
 require 'open-uri'
+require 'socksify'
 
 #
 # web spider dsl engine
@@ -36,6 +37,9 @@ module Spidy
     spidy.instance_eval do
       undef :spider
       undef :define
+      undef :wait_time
+      undef :user_agent
+      undef :socks_proxy
     end
     spidy
   end
