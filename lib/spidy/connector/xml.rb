@@ -4,6 +4,8 @@
 # xml
 #
 class Spidy::Connector::Xml
+  include Spidy::Connector::StaticAccessor
+
   def call(url)
     fail 'URL is undefined' if url.blank?
 

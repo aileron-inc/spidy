@@ -4,6 +4,8 @@
 # Mechanize wrapper
 #
 class Spidy::Connector::Html
+  include Spidy::Connector::StaticAccessor
+
   def initialize(wait_time:, user_agent:, logger: nil)
     @wait_time = wait_time
     @logger = logger || proc { |values| STDERR.puts(values.to_json) }

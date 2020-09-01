@@ -4,6 +4,8 @@
 # OpenURI to JSON.parse
 #
 class Spidy::Connector::Json
+  include Spidy::Connector::StaticAccessor
+
   def initialize(wait_time: nil, user_agent: nil)
     @user_agent = user_agent
   end

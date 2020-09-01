@@ -10,6 +10,15 @@ module Spidy::Connector
   autoload :Json
   autoload :Xml
 
+  module StaticAccessor
+    extend ActiveSupport::Concern
+    class_methods do
+      def call(url, wait_time: nil, user_agent: Spidy::Connector::USER_AGENT, &block)
+        new(wait_time: wait_time, user_agent: user_agent).call(url, &block)
+      end
+    end
+  end
+
   #
   # retry class
   #
