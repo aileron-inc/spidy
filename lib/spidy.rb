@@ -5,6 +5,7 @@ require 'active_support/all'
 require 'mechanize'
 require 'open-uri'
 require 'socksify'
+require 'tor'
 
 #
 # web spider dsl engine

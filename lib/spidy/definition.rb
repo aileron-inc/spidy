@@ -28,6 +28,10 @@ module Spidy::Definition
     @socks_proxy = { host: host, port: port }
   end
 
+  def tor?
+    Tor.running?
+  end
+
   def each(source = nil, name: :default, &yielder)
     name = name.presence || :default
     spidy = @namespace[:"#{name}_spider"]
