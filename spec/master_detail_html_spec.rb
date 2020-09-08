@@ -22,7 +22,7 @@ RSpec.describe 'Master detail page' do
       expect(page.title).to be_present
       expect(page.body).to be_present
 
-      page.sub.call do |sub_page|
+      spidy.call(page.html, name: :sub) do |sub_page|
         expect(sub_page.name).to eq('testtest')
       end
     end

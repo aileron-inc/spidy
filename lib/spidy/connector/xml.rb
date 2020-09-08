@@ -14,7 +14,7 @@ class Spidy::Connector::Xml
     end
   end
 
-  def initialize(wait_time: nil, user_agent: nil)
+  def initialize(user_agent: nil, logger: nil)
     @user_agent = user_agent
   end
 end

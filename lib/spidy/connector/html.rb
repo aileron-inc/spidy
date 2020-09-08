@@ -8,7 +8,7 @@ class Spidy::Connector::Html
 
   def initialize(wait_time:, user_agent:, logger: nil)
     @wait_time = wait_time
-    @logger = logger || proc { |values| STDERR.puts(values.to_json) }
+    @logger = logger
     @agent = Mechanize.new
     @user_agent = user_agent
     @agent.user_agent = user_agent

@@ -8,6 +8,6 @@ class Spidy::Connector::Direct
     yielder.call(resource)
   end
 
-  def initialize(wait_time: nil, user_agent: nil)
+  def initialize(wait_time: nil, user_agent: nil, logger: nil)
   end
 end

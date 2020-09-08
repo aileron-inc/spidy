@@ -51,10 +51,6 @@ Spidy.define do
   }
 
   define(as: :html, connector: detail_page) do
-    def sub
-      scraper(:sub, html)
-    end
-
     let(:title, '#title')
     let(:body, '#body')
   end

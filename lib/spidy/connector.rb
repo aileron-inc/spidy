@@ -22,11 +22,19 @@ module Spidy::Connector
     'Safari/537.36'
   ].join(' ')
 
+  #
+  # error output logger
+  #
+  DEFAULT_LOGGER = proc { |values| STDERR.puts(values.to_json) }
+
+  #
+  # static method
+  #
   module StaticAccessor
     extend ActiveSupport::Concern
     class_methods do
-      def call(url, wait_time: nil, user_agent: Spidy::Connector::USER_AGENT, &block)
-        new(wait_time: wait_time, user_agent: user_agent).call(url, &block)
+      def call(url, wait_time: 5, logger: Spidy::Connector::DEFAULT_LOGGER, user_agent: Spidy::Connector::USER_AGENT, &block)
+        new(wait_time: wait_time, user_agent: user_agent, logger: logger).call(url, &block)
       end
     end
   end
@@ -75,10 +83,14 @@ module Spidy::Connector
   #
   # get connection handller
   #
-  def self.get(value, wait_time: nil, user_agent: nil, socks_proxy: nil)
+  def self.get(value, wait_time: nil, user_agent: nil, socks_proxy: nil, logger: nil)
     return value if value.respond_to?(:call)
 
-    builder = Builder.new(const_get(value.to_s.classify).new(wait_time: wait_time || 5, user_agent: user_agent || USER_AGENT), socks_proxy)
+    builder = Builder.new(const_get(value.to_s.classify).new(
+      wait_time: wait_time || 5,
+      user_agent: user_agent || USER_AGENT,
+      logger: logger || DEFAULT_LOGGER,
+    ), socks_proxy)
     return builder.origin_connector if socks_proxy.nil? || builder.proxy_disabled?
 
     builder.proxy_connector
