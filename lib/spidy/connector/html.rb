@@ -6,16 +6,13 @@
 class Spidy::Connector::Html
   include Spidy::Connector::StaticAccessor
 
-  def initialize(wait_time:, user_agent:, logger: nil)
-    @wait_time = wait_time
-    @logger = logger
+  def initialize(user_agent:)
     @agent = Mechanize.new
     @user_agent = user_agent
     @agent.user_agent = user_agent
   end
 
   attr_reader :agent
-  attr_reader :logger
 
   def call(url, encoding: nil, retry_count: 5, &yielder)
     fail 'url is not specified' if url.blank?
@@ -23,42 +20,27 @@ class Spidy::Connector::Html
       agent.default_encoding = encoding
       agent.force_default_encoding = true
     end
-    logger.call('connnector.get': url, 'connnector.accessed': Time.current)
-    get(url, retry_count, yielder)
+    connect(url, retry_count, yielder)
+  end
+
+  def refresh!
+    @agent = Mechanize.new
+    @agent.user_agent = @user_agent
   end
 
   private
 
-  def get(url, retry_count, yielder)
-    connect(url, retry_count, yielder)
-  rescue Spidy::Connector::Retry => e
-    logger.call('retry.accessed': Time.current,
-                'retry.uri': url,
-                'retry.response_code': e.response_code,
-                'retry.rest_count': retry_count)
-
-    @agent = Mechanize.new
-    @agent.user_agent = @user_agent
-
-    retry_count -= 1
-    if retry_count.positive?
-      sleep e.wait_time
-      retry
-    end
-    raise e
-  end
-
   def connect(url, retry_count, yielder)
     result = nil
     agent.get(url) do |page|
-      fail Spidy::Connector::Retry, page: page, wait_time: @wait_time if page.title == 'Sorry, unable to access page...'
+      fail Spidy::Connector::Retry, object: page, response_code: page.try(:response_code) if page.title == 'Sorry, unable to access page...'
 
       result = yielder.call(page)
     end
     result
   rescue Mechanize::ResponseCodeError => e
-    raise Spidy::Connector::Retry, error: e, wait_time: @wait_time if e.response_code == '429'
-    raise Spidy::Connector::Retry, error: e, wait_time: @wait_time if e.response_code == '502'
-    raise e
+    raise Spidy::Connector::Retry, error: e, response_code: e.try(:response_code) if e.response_code == '429'
+    raise Spidy::Connector::Retry, error: e, response_code: e.try(:response_code) if e.response_code == '502'
+    raise Spidy::Connector::Retry, error: e, response_code: e.try(:response_code)
   end
 end

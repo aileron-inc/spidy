@@ -12,7 +12,7 @@ RSpec.describe 'shell interface' do
   end
 
   describe 'call' do
-    command { "echo 'http://localhost/?id=91' | spidy call #{__dir__}/example.rb" }
+    command { "echo 'http://localhost/?id=91' | spidy call #{__dir__}/example/master_detail.rb" }
     its(:exitstatus) { is_expected.to eq 0 }
     its(:stdout) { is_expected.to include('{"title":"title_91","body":"body_91"}') }
   end

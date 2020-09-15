@@ -10,10 +10,12 @@ module Spidy::Connector
   autoload :Json
   autoload :Xml
 
+  DEFAULT_WAIT_TIME = 5
+
   #
   # default user agent
   #
-  USER_AGENT = [
+  DEFAULT_USER_AGENT = [
     'Mozilla/5.0',
     '(Macintosh; Intel Mac OS X 10_12_6)',
     'AppleWebKit/537.36',
@@ -43,56 +45,101 @@ module Spidy::Connector
   # retry class
   #
   class Retry < StandardError
-    attr_reader :page
-    attr_reader :response_code
-    attr_reader :wait_time
+    attr_reader :object, :response_code, :error
 
-    def initialize(wait_time: 2, page: nil, error: nil)
-      @page = page
-      @wait_time = wait_time
-      @response_code = error.try(:response_code) || page.try(:response_code)
+    def initialize(object: nil, error: nil, response_code: nil)
+      @object = object
+      @response_code = response_code
+      @error = error
     end
   end
 
-  class Builder
-    attr_reader :origin_connector, :proxy_connector
+  #
+  # retry
+  #
+  class Retryable
+    attr_reader :origin_connector
+
+    def initialize(connector, logger:, wait_time:)
+      @origin_connector = connector
+      @logger = logger
+      @wait_time = wait_time
+      @retry_attempt_count = 5
+    end
+
+    def call(url, &block)
+      connect(url, &block)
+    end
+
+    def connect(url, retry_attempt_count: @retry_attempt_count, &block)
+      @logger.call('connnector.get': url, 'connnector.accessed': Time.current)
+      @origin_connector.call(url, &block)
+    rescue Spidy::Connector::Retry => e
+      @logger.call('retry.accessed': Time.current,
+                   'retry.uri': url,
+                   'retry.response_code': e.response_code,
+                   'retry.attempt_count': retry_attempt_count)
+
+      retry_attempt_count -= 1
+      if retry_attempt_count.positive?
+        sleep @wait_time
+        @origin_connector.refresh! if @origin_connector.respond_to?(:refresh!)
+        retry
+      end
+      raise e.error
+    end
+  end
+
+  #
+  # tor proxy
+  #
+  class TorConnector
+    attr_reader :connector, :socks_proxy
 
     def initialize(connector, socks_proxy)
+      @connector = connector
       @socks_proxy = socks_proxy
-      @origin_connector = connector
-      @proxy_connector =
-        lambda do |url, &block|
-          Socksify::proxy(socks_proxy[:host], socks_proxy[:port]) do
-            connector.call(url, &block)
-          end
-        end
     end
 
-    def proxy_disabled?
-      !tor?
+    def call(url, &block)
+      Socksify::proxy(socks_proxy[:host], socks_proxy[:port]) do
+        connector.call(url, &block)
+      end
     end
 
-    def tor?
-      Tor::Controller.new(host: @socks_proxy[:host], port: @socks_proxy[:port]).close
+    def try_connection?
+      try_connection!
       true
     rescue Errno::ECONNREFUSED
       false
     end
+
+    def try_connection!
+      Tor::Controller.new(host: @socks_proxy[:host], port: @socks_proxy[:port]).close
+    end
+  end
+
+  def self.get(value, wait_time: nil, user_agent: nil, socks_proxy: nil, logger: nil)
+    logger ||= DEFAULT_LOGGER
+    user_agent ||= DEFAULT_USER_AGENT
+    wait_time ||= DEFAULT_WAIT_TIME
+
+    connector = get_connector(value, user_agent: user_agent, socks_proxy: socks_proxy)
+    Retryable.new(connector, wait_time: wait_time, logger: logger)
   end
 
   #
   # get connection handller
   #
-  def self.get(value, wait_time: nil, user_agent: nil, socks_proxy: nil, logger: nil)
+  def self.get_connector(value, user_agent: nil, socks_proxy: nil)
     return value if value.respond_to?(:call)
 
-    builder = Builder.new(const_get(value.to_s.classify).new(
-      wait_time: wait_time || 5,
-      user_agent: user_agent || USER_AGENT,
-      logger: logger || DEFAULT_LOGGER,
-    ), socks_proxy)
-    return builder.origin_connector if socks_proxy.nil? || builder.proxy_disabled?
+    connector = const_get(value.to_s.classify).new(user_agent: user_agent)
+    fail "Not defined connnector[#{value}]" if connector.nil?
+    return connector if socks_proxy.nil?
 
-    builder.proxy_connector
+    tor = TorConnector.new(connnector, socks_proxy)
+    tor.try_connection!
+    tor
   end
 end
