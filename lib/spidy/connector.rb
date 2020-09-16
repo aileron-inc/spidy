@@ -138,7 +138,7 @@ module Spidy::Connector
     fail "Not defined connnector[#{value}]" if connector.nil?
     return connector if socks_proxy.nil?
 
-    tor = TorConnector.new(connnector, socks_proxy)
+    tor = TorConnector.new(connector, socks_proxy)
     tor.try_connection!
     tor
   end
