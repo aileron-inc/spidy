@@ -139,7 +139,6 @@ module Spidy::Connector
     return connector if socks_proxy.nil?
 
     tor = TorConnector.new(connector, socks_proxy)
-    tor.try_connection!
     tor
   end
 end
