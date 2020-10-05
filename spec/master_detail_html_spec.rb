@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Master detail page' do
-  spidy = Spidy.open("#{__dir__}/example/master_detail.rb")
+  spidy = Spidy.open("#{__dir__}/../example/master_detail.rb")
 
   specify 'each' do
     last_url = nil

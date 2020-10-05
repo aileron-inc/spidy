@@ -8,7 +8,7 @@ class Spidy::Connector::Json
 
   attr_reader :logger
 
-  def initialize(user_agent: nil)
+  def initialize(user_agent:)
     @user_agent = user_agent
   end
 

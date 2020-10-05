@@ -1,6 +1,42 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require 'capybara_discoball'
+require 'sinatra'
+
+class ConnectorMock < Sinatra::Base
+  get '/test.html' do
+    <<-HTML
+      <html>
+        <head>
+          <title>TEST</title>
+        </head>
+        <body>
+          test
+        </body>
+      </html>
+    HTML
+  end
+
+  get '/test.json' do
+    content_type :json
+    {
+      title: 'test'
+    }.to_json
+  end
+
+  get '/test.xml' do
+    <<-XML
+      <TEST>
+        <A>TEST</A>
+      </TEST>
+    XML
+  end
+end
+
+Capybara::Discoball.spin(ConnectorMock) do |server|
+  ConnectorMock::BASE_URL = server.url
+end
 
 RSpec.describe Spidy::Connector do
   specify do
@@ -14,5 +50,45 @@ RSpec.describe Spidy::Connector do
   end
   specify do
     expect(Spidy::Connector.get(:direct).origin_connector).to be_kind_of(Spidy::Connector::Direct)
+  end
+
+  describe 'static accessor' do
+
+    specify :html do
+      expect {
+        Spidy::Connector::Html.call("#{ConnectorMock::BASE_URL}/test.html")
+      }.not_to raise_error
+    end
+
+    specify :json do
+      expect {
+        Spidy::Connector::Json.call("#{ConnectorMock::BASE_URL}/test.json")
+      }.not_to raise_error
+    end
+
+    specify :xml do
+      expect {
+        Spidy::Connector::Xml.call("#{ConnectorMock::BASE_URL}/test.xml")
+      }.not_to raise_error
+    end
+
+  end
+
+  specify :html do
+    expect {
+      Spidy::Connector.get(:html).call("#{ConnectorMock::BASE_URL}/test.html")
+    }.not_to raise_error
+  end
+
+  specify :json do
+    expect {
+      Spidy::Connector.get(:json).call("#{ConnectorMock::BASE_URL}/test.json")
+    }.not_to raise_error
+  end
+
+  specify :xml do
+    expect {
+      Spidy::Connector.get(:xml).call("#{ConnectorMock::BASE_URL}/test.xml")
+    }.not_to raise_error
   end
 end

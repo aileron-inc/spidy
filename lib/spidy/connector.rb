@@ -15,7 +15,7 @@ module Spidy::Connector
   #
   # default user agent
   #
-  DEFAULT_USER_AGENT = [
+  USER_AGENT = [
     'Mozilla/5.0',
     '(Macintosh; Intel Mac OS X 10_12_6)',
     'AppleWebKit/537.36',
@@ -36,7 +36,7 @@ module Spidy::Connector
     extend ActiveSupport::Concern
     class_methods do
       def call(url, wait_time: 5, logger: Spidy::Connector::DEFAULT_LOGGER, user_agent: Spidy::Connector::USER_AGENT, &block)
-        new(wait_time: wait_time, user_agent: user_agent, logger: logger).call(url, &block)
+        ::Spidy::Connector::RetryableCaller.new(new(user_agent: user_agent), wait_time: wait_time, logger: logger).call(url, &block)
       end
     end
   end
@@ -57,7 +57,7 @@ module Spidy::Connector
   #
   # retry
   #
-  class Retryable
+  class RetryableCaller
     attr_reader :origin_connector
 
     def initialize(connector, logger:, wait_time:)
@@ -68,6 +68,7 @@ module Spidy::Connector
     end
 
     def call(url, &block)
+      block ||= ->(result) { break result }
       connect(url, &block)
     end
 
@@ -120,12 +121,12 @@ module Spidy::Connector
   end
 
   def self.get(value, wait_time: nil, user_agent: nil, socks_proxy: nil, logger: nil)
+    user_agent ||= USER_AGENT
     logger ||= DEFAULT_LOGGER
-    user_agent ||= DEFAULT_USER_AGENT
     wait_time ||= DEFAULT_WAIT_TIME
 
     connector = get_connector(value, user_agent: user_agent, socks_proxy: socks_proxy)
-    Retryable.new(connector, wait_time: wait_time, logger: logger)
+    RetryableCaller.new(connector, wait_time: wait_time, logger: logger)
   end
 
   #

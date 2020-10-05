@@ -30,6 +30,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'ffaker'
   spec.add_development_dependency 'rspec-command'
+  spec.add_development_dependency 'capybara_discoball'
+  spec.add_development_dependency 'sinatra'
 
   spec.add_runtime_dependency 'tor'
   spec.add_runtime_dependency 'activesupport'
