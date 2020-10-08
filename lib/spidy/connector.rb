@@ -126,6 +126,8 @@ module Spidy::Connector
     wait_time ||= DEFAULT_WAIT_TIME
 
     connector = get_connector(value, user_agent: user_agent, socks_proxy: socks_proxy)
+    return connector if connector.is_a?(Spidy::Connector::Direct)
+
     RetryableCaller.new(connector, wait_time: wait_time, logger: logger)
   end
 

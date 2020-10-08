@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    spidy (0.3.3)
+    spidy (0.3.4)
       activesupport
       mechanize
       pry

@@ -5,7 +5,11 @@
 #
 class Spidy::Connector::Direct
   def call(resource, &yielder)
-    yielder.call(resource)
+    if block_given?
+      yield resource
+    else
+      resource
+    end
   end
 
   def initialize(user_agent:)

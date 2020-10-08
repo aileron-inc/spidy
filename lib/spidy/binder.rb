@@ -42,6 +42,7 @@ module Spidy::Binder
     end
 
     def to_h
+      binding.pry
       self.class.attribute_names.map { |name| [name, send(name)] }.to_h
     end
   end

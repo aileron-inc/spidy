@@ -49,11 +49,10 @@ RSpec.describe Spidy::Connector do
     expect(Spidy::Connector.get(:json).origin_connector).to be_kind_of(Spidy::Connector::Json)
   end
   specify do
-    expect(Spidy::Connector.get(:direct).origin_connector).to be_kind_of(Spidy::Connector::Direct)
+    expect(Spidy::Connector.get(:direct)).to be_kind_of(Spidy::Connector::Direct)
   end
 
   describe 'static accessor' do
-
     specify :html do
       expect {
         Spidy::Connector::Html.call("#{ConnectorMock::BASE_URL}/test.html")
@@ -71,7 +70,6 @@ RSpec.describe Spidy::Connector do
         Spidy::Connector::Xml.call("#{ConnectorMock::BASE_URL}/test.xml")
       }.not_to raise_error
     end
-
   end
 
   specify :html do
@@ -90,5 +88,10 @@ RSpec.describe Spidy::Connector do
     expect {
       Spidy::Connector.get(:xml).call("#{ConnectorMock::BASE_URL}/test.xml")
     }.not_to raise_error
+  end
+
+  specify :direct do
+    expect(Spidy::Connector.get(:direct).call('test')).to eq('test')
+    expect(Spidy::Connector.get(:direct).call('test') { |x| break x }).to eq('test')
   end
 end
