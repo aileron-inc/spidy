@@ -8,7 +8,7 @@ class Spidy::Binder::Html < Spidy::Binder::Base
     @attribute_names ||= []
     @attribute_names << name
 
-    return define_method(name) { html.at(query)&.text } if block.nil?
+    return define_method(name) { html.at(query)&.text&.strip } if block.nil?
 
     define_method(name) do
       if query.present?
