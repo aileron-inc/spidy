@@ -3,8 +3,8 @@
 #
 # Bind xml and convert to object
 #
-class Spidy::Binder::Xml < Spidy::Binder::Base
-  def self.let(name, query = nil, &block)
+module Spidy::Binder::Xml
+  def let(name, query = nil, &block)
     @attribute_names ||= []
     @attribute_names << name
 
@@ -20,6 +20,7 @@ class Spidy::Binder::Xml < Spidy::Binder::Base
       fail Spidy::Binder::Error, "spidy(#{@define_name})##{name} => #{e.message}"
     end
   end
-
-  alias_method :xml, :resource
+  def self.extended(obj)
+    obj.alias_method :xml, :resource
+  end
 end

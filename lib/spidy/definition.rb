@@ -44,22 +44,20 @@ module Spidy::Definition
     end
   end
 
-  def define(name = :default, connector: nil, binder: nil, as: nil, &define_block)
-    @namespace ||= {}
+  def define(name = :default, connector: nil, as: nil, &define_block)
     connector = Spidy::Connector.get(connector || as, wait_time: @wait_time, user_agent: @user_agent, socks_proxy: @socks_proxy)
-    binder = Spidy::Binder.get(self, binder || as)
-    @namespace[:"#{name}_scraper"] = define_proc(name, connector, binder, define_block)
-  end
-
-  private
-
-  def define_proc(name, connector, binder, define_block)
-    proc do |source, &yielder|
-      yielder = lambda { |result| break result } if yielder.nil?
-      connection_yielder = lambda do |page|
-        binder.call(page, url: source, define: define_block, define_name: name) { |object| yielder.call(object) }
+    binder_base = Spidy::Binder.const_get(as.to_s.classify)
+    @namespace ||= {}
+    @namespace[:"#{name}_scraper"] = Class.new(Spidy::DefineObject) do
+      extend binder_base
+      class_eval(&define_block)
+      define_singleton_method(:call) do |source, &yielder|
+        yielder = lambda { |result| break result } if yielder.nil?
+        connection_yielder = lambda do |page|
+          yielder.call(new(page, source))
+        end
+        connector.call(source, &connection_yielder)
       end
-      connector.call(source, &connection_yielder)
     end
   end
 end

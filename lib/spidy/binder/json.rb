@@ -3,8 +3,8 @@
 #
 # Bind json and convert to object
 #
-class Spidy::Binder::Json < Spidy::Binder::Base
-  def self.let(name, *query, &block)
+module Spidy::Binder::Json
+  def let(name, *query, &block)
     @attribute_names ||= []
     @attribute_names << name
 
@@ -20,6 +20,7 @@ class Spidy::Binder::Json < Spidy::Binder::Base
       fail Spidy::Binder::Error, "spidy(#{@define_name})##{name} => #{e.message}"
     end
   end
-
-  alias_method :json, :resource
+  def self.extended(obj)
+    obj.alias_method :json, :resource
+  end
 end

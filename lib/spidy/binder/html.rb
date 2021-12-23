@@ -3,8 +3,8 @@
 #
 # Bind html and convert to object
 #
-class Spidy::Binder::Html < Spidy::Binder::Base
-  def self.let(name, query = nil, &block)
+module Spidy::Binder::Html
+  def let(name, query = nil, &block)
     @attribute_names ||= []
     @attribute_names << name
 
@@ -20,6 +20,7 @@ class Spidy::Binder::Html < Spidy::Binder::Base
       fail Spidy::Binder::Error, "spidy(#{@define_name})##{name} => #{e.message}"
     end
   end
-
-  alias_method :html, :resource
+  def self.extended(obj)
+    obj.alias_method :html, :resource
+  end
 end

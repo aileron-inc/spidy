@@ -17,7 +17,8 @@ else
   when 'function' then Spidy.shell(ARGV[1]).function
   when 'call' then Spidy.shell(ARGV[1]).call(ARGV[2])
   when 'each' then Spidy.shell(ARGV[1]).each(ARGV[2])
+  when 'eval' then Spidy.shell(ARGV[1]).eval_call(ARGV[2])
   else
-    STDOUT.puts 'usage: spidy [console function call each] [file]'
+    STDOUT.puts 'usage: spidy [console function call each run] [file]'
   end
 end

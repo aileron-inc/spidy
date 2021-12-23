@@ -8,6 +8,10 @@ class Spidy::CommandLine
   class_attribute :output, default: (proc { |result| STDOUT.puts(result.to_s) })
   class_attribute :error_handler, default: (proc { |e, url| STDERR.puts({ url: url, message: e.message, backtrace: e.backtrace }.to_json) })
 
+  def eval_call(script)
+    @definition_file.spidy.instance_eval(script)
+  end
+
   def initialize(definition_file)
     @definition_file = definition_file
     raise 'unloaded spidy' if definition_file.spidy.nil?

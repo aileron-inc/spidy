@@ -16,5 +16,5 @@ class Spidy::Shell
     Spidy::CommandLine.new(@definition_file)
   end
 
-  delegate :function, :each, :call, to: :command_line
+  delegate :function, :each, :call, :eval_call, to: :command_line
 end
