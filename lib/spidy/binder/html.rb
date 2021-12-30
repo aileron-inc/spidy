@@ -17,9 +17,10 @@ module Spidy::Binder::Html
         instance_exec(&block)
       end
     rescue StandardError => e
-      fail Spidy::Binder::Error, "spidy(#{@define_name})##{name} => #{e.message}"
+      raise Spidy::Binder::Error, "spidy(#{@define_name})##{name} => #{e.message}"
     end
   end
+
   def self.extended(obj)
     obj.alias_method :html, :resource
   end

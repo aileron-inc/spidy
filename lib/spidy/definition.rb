@@ -38,21 +38,23 @@ module Spidy::Definition
 
   def spider(name = :default, connector: nil, as: nil, &define_block)
     @namespace ||= {}
-    connector = Spidy::Connector.get(connector || as, wait_time: @wait_time, user_agent: @user_agent, socks_proxy: @socks_proxy)
+    connector = Spidy::Connector.get(connector || as, wait_time: @wait_time, user_agent: @user_agent,
+                                                      socks_proxy: @socks_proxy)
     @namespace[:"#{name}_spider"] = proc do |source, &yielder|
       define_block.call(yielder, connector, source)
     end
   end
 
   def define(name = :default, connector: nil, as: nil, &define_block)
-    connector = Spidy::Connector.get(connector || as, wait_time: @wait_time, user_agent: @user_agent, socks_proxy: @socks_proxy)
+    connector = Spidy::Connector.get(connector || as, wait_time: @wait_time, user_agent: @user_agent,
+                                                      socks_proxy: @socks_proxy)
     binder_base = Spidy::Binder.const_get(as.to_s.classify)
     @namespace ||= {}
-    @namespace[:"#{name}_scraper"] = Class.new(Spidy::DefineObject) do
+    @namespace[:"#{name}_scraper"] = Class.new(Spidy::DefinitionObject) do
       extend binder_base
       class_eval(&define_block)
       define_singleton_method(:call) do |source, &yielder|
-        yielder = lambda { |result| break result } if yielder.nil?
+        yielder = ->(result) { break result } if yielder.nil?
         connection_yielder = lambda do |page|
           yielder.call(new(page, source))
         end

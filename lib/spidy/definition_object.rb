@@ -1,4 +1,9 @@
-class Spidy::DefineObject
+# frozen_string_literal: true
+
+#
+# An object that represents the scraper defined by define block.
+#
+class Spidy::DefinitionObject
   class << self
     attr_reader :attribute_names
   end
@@ -14,6 +19,6 @@ class Spidy::DefineObject
   end
 
   def to_h
-    self.class.attribute_names.map { |name| [name, send(name)] }.to_h
+    self.class.attribute_names.to_h { |name| [name, send(name)] }
   end
 end

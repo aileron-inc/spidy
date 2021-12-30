@@ -6,10 +6,10 @@ require 'pry'
 
 if ARGV[1].blank?
   case ARGV[0]
-  when 'version' then STDOUT.puts(Spidy::VERSION)
+  when 'version' then $stdout.puts(Spidy::VERSION)
   when 'console' then Spidy.shell.interactive
   else
-    STDOUT.puts 'usage: spidy [version console]'
+    $stdout.puts 'usage: spidy [version console]'
   end
 else
   case ARGV[0]
@@ -19,6 +19,6 @@ else
   when 'each' then Spidy.shell(ARGV[1]).each(ARGV[2])
   when 'eval' then Spidy.shell(ARGV[1]).eval_call(ARGV[2])
   else
-    STDOUT.puts 'usage: spidy [console function call each run] [file]'
+    $stdout.puts 'usage: spidy [console function call each run] [file]'
   end
 end

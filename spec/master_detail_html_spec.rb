@@ -6,17 +6,14 @@ RSpec.describe 'Master detail page' do
   spidy = Spidy.open("#{__dir__}/../example/master_detail.rb")
 
   specify 'each' do
-    last_url = nil
     count = 0
-    spidy.each do |url|
-      last_url = last_url
-      count += 1
-    end
+    binding.pry
+    spidy.each { |_url| count += 1 }
     expect(count).to eq(100)
   end
 
   specify 'call' do
-    url = spidy.each { |url| break url }
+    url = spidy.each.first
     expect(url).to eq('http://localhost/?id=1')
     spidy.call(url) do |page|
       expect(page.title).to be_present

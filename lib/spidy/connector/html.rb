@@ -14,13 +14,13 @@ class Spidy::Connector::Html
 
   attr_reader :agent
 
-  def call(url, encoding: nil, retry_count: 5, &yielder)
+  def call(url, encoding: nil, &yielder)
     fail 'url is not specified' if url.blank?
     if encoding
       agent.default_encoding = encoding
       agent.force_default_encoding = true
     end
-    connect(url, retry_count, yielder)
+    connect(url, yielder)
   end
 
   def refresh!
@@ -30,10 +30,13 @@ class Spidy::Connector::Html
 
   private
 
-  def connect(url, retry_count, yielder)
+  def connect(url, yielder)
     result = nil
     agent.get(url) do |page|
-      fail Spidy::Connector::Retry, object: page, response_code: page.try(:response_code) if page.title == 'Sorry, unable to access page...'
+      if page.title == 'Sorry, unable to access page...'
+        fail Spidy::Connector::Retry, object: page,
+                                      response_code: page.try(:response_code)
+      end
 
       result = yielder.call(page)
     end

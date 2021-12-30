@@ -11,17 +11,17 @@ RSpec.describe 'Spidy' do
   end
 
   let(:html) do
-    Nokogiri::HTML::Builder.new { |doc|
-      doc.html {
-        doc.body {
-          doc.span.bold {
-            doc.text "Hello world"
-          }
-          doc.h1("test_title", id: 'title')
-          doc.main("test_body", id: 'body')
-        }
-      }
-    }.doc
+    Nokogiri::HTML::Builder.new do |doc|
+      doc.html do
+        doc.body do
+          doc.span.bold do
+            doc.text 'Hello world'
+          end
+          doc.h1('test_title', id: 'title')
+          doc.main('test_body', id: 'body')
+        end
+      end
+    end.doc
   end
 
   specify 'Objectized resources' do

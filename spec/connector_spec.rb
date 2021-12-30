@@ -54,40 +54,40 @@ RSpec.describe Spidy::Connector do
 
   describe 'static accessor' do
     specify :html do
-      expect {
+      expect do
         Spidy::Connector::Html.call("#{ConnectorMock::BASE_URL}/test.html")
-      }.not_to raise_error
+      end.not_to raise_error
     end
 
     specify :json do
-      expect {
+      expect do
         Spidy::Connector::Json.call("#{ConnectorMock::BASE_URL}/test.json")
-      }.not_to raise_error
+      end.not_to raise_error
     end
 
     specify :xml do
-      expect {
+      expect do
         Spidy::Connector::Xml.call("#{ConnectorMock::BASE_URL}/test.xml")
-      }.not_to raise_error
+      end.not_to raise_error
     end
   end
 
   specify :html do
-    expect {
+    expect do
       Spidy::Connector.get(:html).call("#{ConnectorMock::BASE_URL}/test.html")
-    }.not_to raise_error
+    end.not_to raise_error
   end
 
   specify :json do
-    expect {
+    expect do
       Spidy::Connector.get(:json).call("#{ConnectorMock::BASE_URL}/test.json")
-    }.not_to raise_error
+    end.not_to raise_error
   end
 
   specify :xml do
-    expect {
+    expect do
       Spidy::Connector.get(:xml).call("#{ConnectorMock::BASE_URL}/test.xml")
-    }.not_to raise_error
+    end.not_to raise_error
   end
 
   specify :direct do

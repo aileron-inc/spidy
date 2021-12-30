@@ -11,11 +11,8 @@ Spidy.define do
 
   define(:infobox, as: :html, connector: :direct) do
     let(:columns) do
-      html.search('tr').each do |tr|
-        {
-          name: tr.at('th')&.text,
-          value: tr.at('td')&.text
-        }
+      html.search('tr').map do |tr|
+        { name: tr.at('th')&.text, value: tr.at('td')&.text }
       end
     end
   end

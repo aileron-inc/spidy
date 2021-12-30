@@ -4,8 +4,7 @@
 # spidy interface binding
 #
 class Spidy::DefinitionFile
-  attr_reader :path
-  attr_reader :spidy
+  attr_reader :path, :spidy
 
   def self.open(filepath)
     object = new(filepath)
@@ -15,7 +14,7 @@ class Spidy::DefinitionFile
 
   # rubocop:disable Security/Eval
   def eval_definition
-    @spidy = eval(File.open(path).read) if path
+    @spidy = eval(File.read(path)) if path
   end
   # rubocop:enable Security/Eval
 

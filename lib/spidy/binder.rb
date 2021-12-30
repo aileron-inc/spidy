@@ -5,6 +5,7 @@
 #
 module Spidy::Binder
   extend ActiveSupport::Autoload
+  autoload :Error
   autoload :Json
   autoload :Html
   autoload :Xml

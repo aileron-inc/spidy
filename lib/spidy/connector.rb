@@ -27,7 +27,7 @@ module Spidy::Connector
   #
   # error output logger
   #
-  DEFAULT_LOGGER = proc { |values| STDERR.puts(values.to_json) }
+  DEFAULT_LOGGER = proc { |values| warn(values.to_json) }
 
   #
   # static method
@@ -36,7 +36,9 @@ module Spidy::Connector
     extend ActiveSupport::Concern
     class_methods do
       def call(url, wait_time: 5, logger: Spidy::Connector::DEFAULT_LOGGER, user_agent: Spidy::Connector::USER_AGENT, &block)
-        ::Spidy::Connector::RetryableCaller.new(new(user_agent: user_agent), wait_time: wait_time, logger: logger).call(url, &block)
+        ::Spidy::Connector::RetryableCaller.new(new(user_agent: user_agent), wait_time: wait_time, logger: logger).call(
+          url, &block
+        )
       end
     end
   end
@@ -51,6 +53,7 @@ module Spidy::Connector
       @object = object
       @response_code = response_code
       @error = error
+      super(error)
     end
   end
 
@@ -103,7 +106,7 @@ module Spidy::Connector
     end
 
     def call(url, &block)
-      Socksify::proxy(socks_proxy[:host], socks_proxy[:port]) do
+      Socksify.proxy(socks_proxy[:host], socks_proxy[:port]) do
         connector.call(url, &block)
       end
     end
@@ -141,7 +144,6 @@ module Spidy::Connector
     fail "Not defined connnector[#{value}]" if connector.nil?
     return connector if socks_proxy.nil?
 
-    tor = TorConnector.new(connector, socks_proxy)
-    tor
+    TorConnector.new(connector, socks_proxy)
   end
 end

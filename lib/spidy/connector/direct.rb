@@ -4,7 +4,7 @@
 # Direct resource ( not network resource  )
 #
 class Spidy::Connector::Direct
-  def call(resource, &yielder)
+  def call(resource)
     if block_given?
       yield resource
     else
@@ -12,6 +12,5 @@ class Spidy::Connector::Direct
     end
   end
 
-  def initialize(user_agent:)
-  end
+  def initialize(user_agent:); end
 end

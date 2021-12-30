@@ -1,7 +1,7 @@
-
+# frozen_string_literal: true
 
 Spidy.define do
-  url_to_params = ->(url) {
+  url_to_params = lambda { |url|
     uri = URI.parse(url)
     params = URI.decode_www_form(uri.query).to_h if uri.query.present?
     params if params.present?
@@ -13,41 +13,41 @@ Spidy.define do
 
     limit_page = 3
     per_page = 25
-    yielder.call(Nokogiri::HTML::Builder.new { |doc|
-      doc.html {
-        doc.body {
-          doc.span.bold {
-            doc.text "Hello world"
-          }
-          doc.main {
-            (page * per_page + 1).upto((page + 1) * per_page).each do |i|
+    yielder.call(Nokogiri::HTML::Builder.new do |doc|
+      doc.html do
+        doc.body do
+          doc.span.bold do
+            doc.text 'Hello world'
+          end
+          doc.main do
+            ((page * per_page) + 1).upto((page + 1) * per_page).each do |i|
               doc.a("page #{i}", href: "http://localhost/?id=#{i}")
             end
-          }
+          end
           doc.a('NEXT', href: "http://localhost/?page=#{page + 1}", class: 'next') if page < limit_page
-        }
-      }
-    }.doc)
+        end
+      end
+    end.doc)
   }
 
   detail_page = proc { |url, &yielder|
     params = url_to_params.call(url)
     id = params['id']
 
-    yielder.call(Nokogiri::HTML::Builder.new { |doc|
-      doc.html {
-        doc.body {
-          doc.span.bold {
-            doc.text "Hello world"
-          }
+    yielder.call(Nokogiri::HTML::Builder.new do |doc|
+      doc.html do
+        doc.body do
+          doc.span.bold do
+            doc.text 'Hello world'
+          end
           doc.h1("title_#{id}", id: 'title')
           doc.main("body_#{id}", id: 'body')
           doc.div.sub do
             doc.span.name('testtest')
           end
-        }
-      }
-    }.doc)
+        end
+      end
+    end.doc)
   }
 
   define(as: :html, connector: detail_page) do

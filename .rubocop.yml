@@ -1,7 +1,8 @@
 inherit_from: .rubocop_todo.yml
 AllCops:
+  TargetRubyVersion: 3.0.2
+  NewCops: enable
   DisplayCopNames: true
-  TargetRubyVersion: 2.6
 
 Style/ClassAndModuleChildren:
   Enabled: false
@@ -9,7 +10,7 @@ Style/ClassAndModuleChildren:
 Style/SignalException:
   EnforcedStyle: semantic
 
-Naming/UncommunicativeMethodParamName:
+Naming/MethodParameterName:
   AllowedNames:
     - as
 
@@ -17,8 +18,11 @@ Metrics/AbcSize:
   Max: 21
   Exclude:
 
+Metrics/MethodLength:
+  Max: 15
+
 Metrics/LineLength:
-  Max: 120
+  Max: 130
 
 Metrics/BlockLength:
   Max: 120
