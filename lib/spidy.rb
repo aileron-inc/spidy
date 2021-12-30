@@ -17,9 +17,9 @@ module Spidy
   autoload :Console
   autoload :Definition
   autoload :DefinitionFile
+  autoload :DefinitionObject
   autoload :Binder
   autoload :Connector
-  autoload :DefineObject
 
   def self.shell(filepath = nil)
     Spidy::Shell.new(filepath)

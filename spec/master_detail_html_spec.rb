@@ -7,7 +7,6 @@ RSpec.describe 'Master detail page' do
 
   specify 'each' do
     count = 0
-    binding.pry
     spidy.each { |_url| count += 1 }
     expect(count).to eq(100)
   end

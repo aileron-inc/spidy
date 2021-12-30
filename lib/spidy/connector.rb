@@ -61,13 +61,13 @@ module Spidy::Connector
   # retry
   #
   class RetryableCaller
-    attr_reader :origin_connector
+    attr_reader :origin_connector, :logger, :wait_time
 
-    def initialize(connector, logger:, wait_time:)
+    def initialize(connector, logger:, wait_time:, retry_attempt_count: 5)
       @origin_connector = connector
       @logger = logger
       @wait_time = wait_time
-      @retry_attempt_count = 5
+      @retry_attempt_count = retry_attempt_count
     end
 
     def call(url, &block)
@@ -76,18 +76,18 @@ module Spidy::Connector
     end
 
     def connect(url, retry_attempt_count: @retry_attempt_count, &block)
-      @logger.call('connnector.get': url, 'connnector.accessed': Time.current)
-      @origin_connector.call(url, &block)
+      logger.call('connnector.get': url, 'connnector.accessed': Time.current)
+      origin_connector.call(url, &block)
     rescue Spidy::Connector::Retry => e
-      @logger.call('retry.accessed': Time.current,
-                   'retry.uri': url,
-                   'retry.response_code': e.response_code,
-                   'retry.attempt_count': retry_attempt_count)
+      logger.call('retry.accessed': Time.current,
+                  'retry.uri': url,
+                  'retry.response_code': e.response_code,
+                  'retry.attempt_count': retry_attempt_count)
 
       retry_attempt_count -= 1
       if retry_attempt_count.positive?
-        sleep @wait_time
-        @origin_connector.refresh! if @origin_connector.respond_to?(:refresh!)
+        sleep wait_time
+        origin_connector.refresh! if origin_connector.respond_to?(:refresh!)
         retry
       end
       raise e.error

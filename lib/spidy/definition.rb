@@ -33,7 +33,13 @@ module Spidy::Definition
     spidy = @namespace[:"#{name}_spider"]
     fail "undefined spidy [#{name}]" if spidy.nil?
 
-    spidy.call(source, &yielder)
+    if yielder
+      spidy.call(source, &yielder)
+    else
+      Enumerator.new do |enumerate_yielder|
+        spidy.call(source, &enumerate_yielder)
+      end
+    end
   end
 
   def spider(name = :default, connector: nil, as: nil, &define_block)
