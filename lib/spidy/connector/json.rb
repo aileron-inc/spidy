@@ -20,6 +20,6 @@ class Spidy::Connector::Json
   def connect(url)
     OpenURI.open_uri(url, 'User-Agent' => @user_agent) { |body| yield JSON.parse(body.read, symbolize_names: true) }
   rescue OpenURI::HTTPError => e
-    raise Spidy::Connector::Retry, error: e, response_code: e.io.status[0]
+    raise Spidy::Connector::Retry.new(error: e, response_code: e.io.status[0])
   end
 end

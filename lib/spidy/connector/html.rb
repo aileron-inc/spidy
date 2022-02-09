@@ -34,16 +34,15 @@ class Spidy::Connector::Html
     result = nil
     agent.get(url) do |page|
       if page.title == 'Sorry, unable to access page...'
-        fail Spidy::Connector::Retry, object: page,
-                                      response_code: page.try(:response_code)
+        fail Spidy::Connector::Retry.new(object: page, response_code: page.try(:response_code))
       end
 
       result = yielder.call(page)
     end
     result
   rescue Mechanize::ResponseCodeError => e
-    raise Spidy::Connector::Retry, error: e, response_code: e.try(:response_code) if e.response_code == '429'
-    raise Spidy::Connector::Retry, error: e, response_code: e.try(:response_code) if e.response_code == '502'
-    raise Spidy::Connector::Retry, error: e, response_code: e.try(:response_code)
+    raise Spidy::Connector::Retry.new(error: e, response_code: e.try(:response_code)) if e.response_code == '429'
+    raise Spidy::Connector::Retry.new(error: e, response_code: e.try(:response_code)) if e.response_code == '502'
+    raise Spidy::Connector::Retry.new(error: e, response_code: e.try(:response_code))
   end
 end

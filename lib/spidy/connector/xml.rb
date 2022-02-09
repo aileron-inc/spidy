@@ -17,7 +17,7 @@ class Spidy::Connector::Xml
       block.call Nokogiri::XML(body.read.gsub(/[\x00-\x09\x0B\x0C\x0E-\x1F\x7F]/, ''), url)
     end
   rescue OpenURI::HTTPError => e
-    raise Spidy::Connector::Retry, error: e, response_code: e.io.status[0]
+    raise Spidy::Connector::Retry.new(error: e, response_code: e.io.status[0])
   end
 
   def initialize(user_agent:)
