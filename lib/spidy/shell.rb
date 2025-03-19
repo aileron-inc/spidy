@@ -9,7 +9,12 @@ class Spidy::Shell
   end
 
   def interactive
-    Pry.start(Spidy::Console.new(@definition_file))
+    console = Spidy::Console.new(@definition_file)
+    require 'irb'
+    IRB.setup(nil)
+    irb = IRB::Irb.new(IRB::WorkSpace.new(console))
+    IRB.conf[:MAIN_CONTEXT] = irb.context
+    irb.eval_input
   end
 
   def command_line

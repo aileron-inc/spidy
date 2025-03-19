@@ -51,7 +51,7 @@ spidy console website.rb
 
 ### reload source code
 ```
-pry(#<Spidy::Console>)> reload!
+irb(#<Spidy::Console>)> reload!
 ```
 
 ```rb

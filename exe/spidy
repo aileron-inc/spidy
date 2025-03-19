@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require 'spidy'
-require 'pry'
 
 if ARGV[1].blank?
   case ARGV[0]

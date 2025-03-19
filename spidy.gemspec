@@ -27,15 +27,13 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'bundler', '~> 2.0'
   spec.add_development_dependency 'capybara_discoball'
   spec.add_development_dependency 'ffaker'
-  spec.add_development_dependency 'pry'
   spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'rspec-command'
   spec.add_development_dependency 'sinatra'
 
-  spec.add_runtime_dependency 'activesupport'
+  spec.add_runtime_dependency 'activesupport', '~> 7.1'
   spec.add_runtime_dependency 'mechanize'
-  spec.add_runtime_dependency 'pry'
   spec.add_runtime_dependency 'socksify'
   spec.add_runtime_dependency 'tor'
   spec.metadata = {
