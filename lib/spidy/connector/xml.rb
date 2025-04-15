@@ -1,20 +1,18 @@
-# frozen_string_literal: true
-
 #
 # xml
 #
 class Spidy::Connector::Xml
   include Spidy::Connector::StaticAccessor
 
-  def call(url, &block)
+  def call(url, &)
     fail 'URL is undefined' if url.blank?
 
-    connect(url, &block)
+    connect(url, &)
   end
 
-  def connect(url, &block)
+  def connect(url)
     OpenURI.open_uri(url, 'User-Agent' => @user_agent) do |body|
-      block.call Nokogiri::XML(body.read.gsub(/[\x00-\x09\x0B\x0C\x0E-\x1F\x7F]/, ''), url)
+      yield Nokogiri::XML(body.read.gsub(/[\x00-\x09\x0B\x0C\x0E-\x1F\x7F]/, ''), url)
     end
   rescue OpenURI::HTTPError => e
     raise Spidy::Connector::Retry.new(error: e, response_code: e.io.status[0])

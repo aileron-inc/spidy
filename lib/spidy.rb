@@ -1,6 +1,4 @@
-# frozen_string_literal: true
-
-require 'spidy/version'
+require_relative 'spidy/version'
 require 'active_support/all'
 require 'mechanize'
 require 'open-uri'
@@ -29,11 +27,11 @@ module Spidy
     Spidy::DefinitionFile.open(filepath).spidy
   end
 
-  def self.define(&block)
+  def self.define(&)
     spidy = Module.new do
       class_eval do
         extend ::Spidy::Definition
-        module_eval(&block)
+        module_eval(&)
       end
     end
     spidy.instance_eval do

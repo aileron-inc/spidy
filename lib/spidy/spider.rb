@@ -1,11 +1,9 @@
-# frozen_string_literal: true
-
 #
 # Spider
 #
 class Spidy::Spider
-  def initialize(&block)
-    define_singleton_method(:bind, &block)
+  def initialize(&)
+    define_singleton_method(:bind, &)
   end
 
   def call(resource)

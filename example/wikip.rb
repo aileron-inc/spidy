@@ -1,8 +1,6 @@
-# frozen_string_literal: true
-
 Spidy.define do
-  def self.infobox_scrape(params, &block)
-    call(params.html.at('.infobox'), name: :infobox, &block)
+  def self.infobox_scrape(params, &)
+    call(params.html.at('.infobox'), name: :infobox, &)
   end
 
   define(as: :html) do

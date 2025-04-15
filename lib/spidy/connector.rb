@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 #
 # This class is responsible for actually making a network connection and downloading hypertext
 #
@@ -9,6 +7,7 @@ module Spidy::Connector
   autoload :Html
   autoload :Json
   autoload :Xml
+  autoload :Lightpanda
 
   DEFAULT_WAIT_TIME = 5
 
@@ -35,9 +34,9 @@ module Spidy::Connector
   module StaticAccessor
     extend ActiveSupport::Concern
     class_methods do
-      def call(url, wait_time: 5, logger: Spidy::Connector::DEFAULT_LOGGER, user_agent: Spidy::Connector::USER_AGENT, &block)
+      def call(url, wait_time: 5, logger: Spidy::Connector::DEFAULT_LOGGER, user_agent: Spidy::Connector::USER_AGENT, &)
         ::Spidy::Connector::RetryableCaller.new(new(user_agent: user_agent), wait_time: wait_time, logger: logger).call(
-          url, &block
+          url, &
         )
       end
     end
@@ -75,9 +74,9 @@ module Spidy::Connector
       connect(url, &block)
     end
 
-    def connect(url, retry_attempt_count: @retry_attempt_count, &block)
+    def connect(url, retry_attempt_count: @retry_attempt_count, &)
       logger.call('connnector.get': url, 'connnector.accessed': Time.current)
-      origin_connector.call(url, &block)
+      origin_connector.call(url, &)
     rescue Spidy::Connector::Retry => e
       logger.call('retry.accessed': Time.current,
                   'retry.uri': url,
@@ -105,9 +104,9 @@ module Spidy::Connector
       @socks_proxy = socks_proxy
     end
 
-    def call(url, &block)
+    def call(url, &)
       Socksify.proxy(socks_proxy[:host], socks_proxy[:port]) do
-        connector.call(url, &block)
+        connector.call(url, &)
       end
     end
 

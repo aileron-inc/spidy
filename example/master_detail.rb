@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 Spidy.define do
   url_to_params = lambda { |url|
     uri = URI.parse(url)
@@ -9,7 +7,7 @@ Spidy.define do
 
   master_page = proc { |url, &yielder|
     params = url_to_params.call(url)
-    page = params&.dig('page')&.to_i || 0
+    page = params&.dig('page').to_i
 
     limit_page = 3
     per_page = 25
