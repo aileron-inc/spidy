@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 #
 # OpenURI to JSON.parse
 #
@@ -12,9 +10,9 @@ class Spidy::Connector::Json
     @user_agent = user_agent
   end
 
-  def call(url, &block)
+  def call(url, &)
     fail 'url is not specified' if url.blank?
-    connect(url, &block)
+    connect(url, &)
   end
 
   def connect(url)

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 require 'capybara_discoball'
 require 'sinatra'
@@ -40,16 +38,19 @@ end
 
 RSpec.describe Spidy::Connector do
   specify do
-    expect(Spidy::Connector.get(:html).origin_connector).to be_kind_of(Spidy::Connector::Html)
+    expect(described_class.get(:html).origin_connector).to be_a(Spidy::Connector::Html)
   end
+
   specify do
-    expect(Spidy::Connector.get(:xml).origin_connector).to be_kind_of(Spidy::Connector::Xml)
+    expect(described_class.get(:xml).origin_connector).to be_a(Spidy::Connector::Xml)
   end
+
   specify do
-    expect(Spidy::Connector.get(:json).origin_connector).to be_kind_of(Spidy::Connector::Json)
+    expect(described_class.get(:json).origin_connector).to be_a(Spidy::Connector::Json)
   end
+
   specify do
-    expect(Spidy::Connector.get(:direct)).to be_kind_of(Spidy::Connector::Direct)
+    expect(described_class.get(:direct)).to be_a(Spidy::Connector::Direct)
   end
 
   describe 'static accessor' do
@@ -74,24 +75,24 @@ RSpec.describe Spidy::Connector do
 
   specify :html do
     expect do
-      Spidy::Connector.get(:html).call("#{ConnectorMock::BASE_URL}/test.html")
+      described_class.get(:html).call("#{ConnectorMock::BASE_URL}/test.html")
     end.not_to raise_error
   end
 
   specify :json do
     expect do
-      Spidy::Connector.get(:json).call("#{ConnectorMock::BASE_URL}/test.json")
+      described_class.get(:json).call("#{ConnectorMock::BASE_URL}/test.json")
     end.not_to raise_error
   end
 
   specify :xml do
     expect do
-      Spidy::Connector.get(:xml).call("#{ConnectorMock::BASE_URL}/test.xml")
+      described_class.get(:xml).call("#{ConnectorMock::BASE_URL}/test.xml")
     end.not_to raise_error
   end
 
   specify :direct do
-    expect(Spidy::Connector.get(:direct).call('test')).to eq('test')
-    expect(Spidy::Connector.get(:direct).call('test') { |x| break x }).to eq('test')
+    expect(described_class.get(:direct).call('test')).to eq('test')
+    expect(described_class.get(:direct).call('test') { |x| break x }).to eq('test')
   end
 end

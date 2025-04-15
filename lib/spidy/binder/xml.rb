@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 #
 # Bind xml and convert to object
 #

@@ -20,14 +20,73 @@ Or install it yourself as:
 
 ## Usage
 
-### When used from the command line
+### Connectors
 
-website.rb
+Spidy supports different connectors for fetching web pages:
+
+1. **HTML Connector (Mechanize)**: Default connector for regular HTTP requests and HTML parsing
+2. **JSON Connector**: For parsing JSON APIs
+3. **XML Connector**: For parsing XML responses
+4. **Lightpanda Connector**: For JavaScript-rendered websites (uses Playwright)
+
+#### Lightpanda Connector for JavaScript-Rendered Websites
+
+The Lightpanda connector allows you to process JavaScript-rendered websites by connecting to a running lightpanda CDP server.
+
+##### Prerequisites
+
+1. Install the Playwright Ruby client:
+
+```bash
+$ gem install playwright-ruby-client
+```
+
+2. Start a lightpanda CDP server in a separate terminal:
+
+```bash
+$ lightpanda serve --host 127.0.0.1 --port 9222
+```
+
+##### Usage
+
+```ruby
+# Define a scraper with lightpanda support
+scraper = Spidy.define do
+  # Use the :lightpanda connector for JavaScript-rendered sites
+  spider(as: :lightpanda) do |yielder, connector, url|
+    connector.call(url) do |page|
+      # Process the JavaScript-rendered page
+      # page is a Nokogiri-like object
+      yielder.call(page)
+    end
+  end
+
+  define(as: :html) do
+    let(:title, 'title')
+    # Extract content from JS-rendered page...
+  end
+end
+```
+
+##### Configuration
+
+You can customize the lightpanda CDP server connection using environment variables:
+
+```bash
+# Set custom host and port
+$ LIGHTPANDA_HOST=192.168.1.100 LIGHTPANDA_PORT=9333 ruby your_script.rb
+```
+
+Check `example/playwright_example.rb` for a complete example.
+
+### Command Line Usage
+
+Create a definition file (e.g., website.rb):
 ```rb
-Spidy.defin do
+Spidy.define do
   spider(as: :html) do |yielder, connector, url|
     connector.call(url) do |html|
-      # html as nokogiri object ( mechanize )
+      # html is a Nokogiri object (from Mechanize)
       yielder.call(url)
     end
   end
@@ -37,41 +96,61 @@ Spidy.defin do
   end
 end
 ```
+
+Use it from the command line:
 ```bash
 echo 'http://example.com' | spidy each website.rb > urls
 cat urls | spidy call website.rb > website.json
-# shorthands
+# shorthand
 echo 'http://example.com' | spidy each website.rb | spidy call website.rb | jq .
 ```
 
-### When development console
+### Development Console
+
+Start an interactive console with your definition:
 ```bash
 spidy console website.rb
 ```
 
-### reload source code
+Reload your source code during development:
 ```
 irb(#<Spidy::Console>)> reload!
 ```
 
+Example console usage:
 ```rb
 each('http://example.com') { |url| break url }
-call('http://example.com') { |html| break html } # html as nokogiri object ( mechanize )
+call('http://example.com') { |html| break html } # html is a Nokogiri object (from Mechanize)
 ```
 
-### When used from the ruby code
+### Ruby Code Usage
+
+Create and use a scraper in your Ruby code:
 ```rb
-a = Spidy.define do
-  # Implementing spiders and scrapers
+scraper = Spidy.define do
+  # Implement spiders and scrapers
+  spider(as: :html) do |yielder, connector, url|
+    connector.call(url) do |page|
+      yielder.call(page)
+    end
+  end
+  
+  define(as: :html) do
+    let(:title, 'title')
+    let(:links) { |doc| doc.css('a').map { |a| a['href'] } }
+  end
 end
 
-a.each(url) do |url|
-  # Loop for the number of retrieved URLs
+# Extract URLs from a site
+scraper.each(url) do |page_url|
+  # Process each URL found
+  puts page_url
 end
 
-a.call(url) do |object|
-  # The scrape result is passed as a defined object
-end
+# Extract structured data from a site
+result = scraper.call(url)
+puts "Title: #{result[:title]}"
+puts "Found #{result[:links].size} links"
 ```
 
 ## Development

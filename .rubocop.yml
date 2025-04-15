@@ -1,34 +1,79 @@
-inherit_from: .rubocop_todo.yml
+plugins:
+  - rubocop-performance
+  - rubocop-rspec
+
 AllCops:
-  TargetRubyVersion: 3.0.2
+  TargetRubyVersion: 3.4.2
   NewCops: enable
   DisplayCopNames: true
+  Exclude:
+    - 'vendor/**/*'
+    - 'bin/**/*'
+    - 'tmp/**/*'
 
+Gemspec/RequiredRubyVersion:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  EnforcedStyle: never
+
+# Style
 Style/ClassAndModuleChildren:
   Enabled: false
 
 Style/SignalException:
   EnforcedStyle: semantic
 
+Style/Documentation:
+  Enabled: false
+
+Style/StringLiterals:
+  EnforcedStyle: single_quotes
+  ConsistentQuotesInMultiline: true
+
+# Naming
 Naming/MethodParameterName:
   AllowedNames:
     - as
+    - id
+    - io
+    - ip
+    - of
+    - on
+    - to
+    - up
 
+# Metrics
 Metrics/AbcSize:
-  Max: 21
+  Max: 25
   Exclude:
+    - 'lib/spidy/connector/lightpanda.rb'
 
 Metrics/MethodLength:
-  Max: 15
+  Max: 20
+  Exclude:
+    - 'lib/spidy/connector/lightpanda.rb'
 
-Metrics/LineLength:
+Metrics/ClassLength:
+  Max: 150
+  Exclude:
+    - 'lib/spidy/connector/lightpanda.rb'
+
+Layout/LineLength:
   Max: 130
 
 Metrics/BlockLength:
   Max: 120
-
-SignalException:
-  EnforcedStyle: semantic
+  Exclude:
+    - 'spec/**/*'
+    - 'example/**/*'
 
 Layout/EmptyLineAfterGuardClause:
   Enabled: false
+
+# RSpec
+RSpec/ExampleLength:
+  Max: 15
+
+RSpec/MultipleExpectations:
+  Max: 5

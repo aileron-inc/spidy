@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 #
 # An object that represents the scraper defined by define block.
 #

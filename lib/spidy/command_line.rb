@@ -1,14 +1,12 @@
-# frozen_string_literal: true
-
 #
 # spidy shell interface
 #
 class Spidy::CommandLine
   delegate :spidy, to: :@definition_file
-  class_attribute :output, default: (proc { |result| $stdout.puts(result.to_s) })
-  class_attribute :error_handler, default: (proc { |e, url|
-                                              warn({ url: url, message: e.message, backtrace: e.backtrace }.to_json)
-                                            })
+  class_attribute :output, default: proc { |result| $stdout.puts(result.to_s) }
+  class_attribute :error_handler, default: proc { |e, url|
+    warn({ url: url, message: e.message, backtrace: e.backtrace }.to_json)
+  }
 
   def eval_call(script)
     @definition_file.spidy.instance_eval(script)

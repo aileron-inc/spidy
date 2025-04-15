@@ -1,9 +1,7 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 
-RSpec.describe 'Master detail page' do
-  spidy = Spidy.open("#{__dir__}/../example/master_detail.rb")
+RSpec.describe Spidy::Connector::Html do
+  spidy = Spidy.open("#{__dir__}/../../../example/master_detail.rb")
 
   specify 'each' do
     count = 0

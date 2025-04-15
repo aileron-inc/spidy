@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 #
 # Bind json and convert to object
 #
