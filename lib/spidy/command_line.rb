@@ -4,8 +4,18 @@
 class Spidy::CommandLine
   delegate :spidy, to: :@definition_file
   class_attribute :output, default: proc { |result| $stdout.puts(result.to_s) }
+
   class_attribute :error_handler, default: proc { |e, url|
-    warn({ url: url, message: e.message, backtrace: e.backtrace }.to_json)
+    backtrace = e.backtrace.map { |line| "  #{line}" }.join("\n")
+    warn <<~ERROR
+      ======== Spidy Error ========
+      URL: #{url}
+      Error: #{e.class} - #{e.message}
+
+      Backtrace:
+      #{backtrace}
+      ============================
+    ERROR
   }
 
   def eval_call(script)
@@ -73,8 +83,6 @@ class Spidy::CommandLine
 
   def build_ruby
     <<~RUBY
-      # frozen_string_literal: true
-
       Spidy.define do
         spider(as: :html) do |yielder, connector|
           # connector.call(url) do |resource|
